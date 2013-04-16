@@ -1,4 +1,0 @@
-myos
-====
-
-os system
