@@ -34,6 +34,7 @@ entry:
 		DB		"FAT12   "		; 
 		
         ;设置各个段寄存器的值使他指向0x7c0
+		;因为地址可以是段寄存器左移一位 + 偏移量
 start:
         mov ax, BOOTSEG
         mov ss, ax
