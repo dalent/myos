@@ -109,33 +109,38 @@ die:	jnz die;64k边界
 		xor bx,bx
 rp_read:
 		mov ax, es
-		cmp ax, ENDSEG
+		cmp ax, ENDSEG;是否到达结束为止
 		jb ok1_read
 		ret
 ok1_read:
-		mov ax,[cs:sectors]
-		sub ax,[cs:sread]
+		mov ax,[cs:sectors];每个磁道的扇区数
+		sub ax,[cs:sread];减去已经读取的扇区，为需要读取的扇区数
 		mov cx,ax
-		shl cx,9
-		add cx,bx
+		shl cx,9;扇区数*512，为需要的内存
+		add cx,bx;判断是否超过了段内偏移量
 		jnc ok2_read
 		je ok2_read
 		xor ax,ax
-		sub ax,bx
+		sub ax,bx;如果超过了，我们读取不超过的数量
 		shr ax,9
 ok2_read:
-		call read_track
-		mov cx, ax         		cmp ax,[cs:sectors]
+		call read_track;读取数据
+		mov cx, ax  ;读取的数量
+		add ax,[cs:sread]		cmp ax,[cs:sectors]
 		jne ok3_read
 		mov ax,1
 		sub ax,[cs:head]
 		jne ok4_read
-		inc [cs:track]
+		push dx
+		mov dx ,[cs:track]
+		inc dx
+		mov [cs:track],dx
+		pop dx
 ok4_read:
 		mov [cs:head],ax
 		xor ax,ax
 ok3_read:
-		mov [cs:sread],ax
+		mov [cs:sread],ax;保存读取的扇区数
 		shl cx,9
 		add bx,cx
 		jnc rp_read
@@ -172,7 +177,7 @@ bad_rt: mov ax,0
 		pop cx
 		pop bx
 		pop ax
-		jmp read_track
+		jmp read_track						
 sectors:
 		db 18
 msg1:
