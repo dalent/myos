@@ -10,7 +10,7 @@ INITSEG  EQU 0x9000
 SETUPSEG EQU 0x9020
 SYSSEG   EQU 0x1000
 ENDSEG   EQU SYSSEG + SYSSIZE
-
+		
 entry:
         jmp start;3字节的跳转指令
         ;标准的磁盘属性
@@ -94,7 +94,7 @@ ok_load_setup:
 		;我们已经写了message了，是时候加载system模块了。我们将它加载到0x10000处
 		mov ax, SYSSEG
 		mov es, ax
-		call read_it
+		;call read_it
 setup:
 		jmp SETUPSEG:0
 ;该子程序将系统模块加载到内存地址0x10000处，并确定没有跨越64k边界。我们试图尽快的进行加载，只要可能，
@@ -190,7 +190,7 @@ size equ $ - entry
 %if size +2 > 512
 		%error "code is too large for boot sector"
 %endif
-		times (512 - size -2) db 2
+		times (512 - size -2) db 0
 		db 0x55,0xAA;2字节的磁盘标识
 		
 		
