@@ -2,8 +2,7 @@
 ;bios会吧第一个扇区的512字节加载到0x7c00， 然后本程序负责吧内核从
 ;磁盘加载到内存。
 [bits 16]
-SYSSIZE  EQU 0x3000;
-CYLS     EQU 10 ;加载的扇区数 
+SYSSIZE  EQU 0x3000;我们只读取192k的内核，也足够了 
 SETUPLEN EQU 4
 BOOTSEG  EQU 0x7c0
 INITSEG  EQU 0x9000
@@ -94,8 +93,19 @@ ok_load_setup:
 		;我们已经写了message了，是时候加载system模块了。我们将它加载到0x10000处
 		mov ax, SYSSEG
 		mov es, ax
-		;call read_it
+		call read_it
+		mov ax,0xfff
+delay:
+		mov cx,0xffff
 setup:
+		
+		sub cx,1
+		cmp cx,0
+		jne setup
+		sub ax,1
+		cmp ax,0
+		jne delay
+		
 		jmp SETUPSEG:0
 ;该子程序将系统模块加载到内存地址0x10000处，并确定没有跨越64k边界。我们试图尽快的进行加载，只要可能，
 ;就每次加载整条磁道的数据。
@@ -128,11 +138,11 @@ ok2_read:
 		mov cx, ax  ;读取的数量
 		add ax,[cs:sread]		cmp ax,[cs:sectors]
 		jne ok3_read
-		mov ax,1
-		sub ax,[cs:head]
+		mov ax,1;读取了一个柱面了
+		sub ax,[cs:head];取当前的柱面
 		jne ok4_read
 		push dx
-		mov dx ,[cs:track]
+		mov dx ,[cs:track];当前的柱面为1，我们得取下个柱面
 		inc dx
 		mov [cs:track],dx
 		pop dx
@@ -142,10 +152,10 @@ ok4_read:
 ok3_read:
 		mov [cs:sread],ax;保存读取的扇区数
 		shl cx,9
-		add bx,cx
+		add bx,cx;移动bx的地址到读完扇区后的地址
 		jnc rp_read
 		mov ax,es
-		add ax,0x1000
+		add ax,0x1000;读取了16位的数据了也就是2^16即64k的数据
 		mov es,ax
 		xor bx,bx
 		jmp rp_read
