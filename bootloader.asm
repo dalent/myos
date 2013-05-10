@@ -14,7 +14,7 @@ entry:
         jmp start;3字节的跳转指令
         ;标准的磁盘属性
 		DB		0x90
-		DB		"HARIBOTE"		; 
+		DB		"HAHAHAHA"		; 
 		DW		512				; 
 		DB		1				; 
 		DW		1				; 
@@ -29,7 +29,7 @@ entry:
 		DD		2880			; 
 		DB		0,0,0x29		; 
 		DD		0xffffffff		; 
-		DB		"HARIBOTEOS "	; 
+		DB		"HAHAHAHAOS "	; 
 		DB		"FAT12   "		; 
 		
         ;设置各个段寄存器的值使他指向0x7c0
@@ -104,7 +104,7 @@ setup:
 		jne setup
 		sub ax,1
 		cmp ax,0
-		jne delay
+		jne delay;故意延迟一下
 		
 		jmp SETUPSEG:0
 ;该子程序将系统模块加载到内存地址0x10000处，并确定没有跨越64k边界。我们试图尽快的进行加载，只要可能，
