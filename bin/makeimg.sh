@@ -12,10 +12,11 @@ echo "setup.bin not exist"
 exit
 fi
 
-if [ -f "kernel"]; then
+if [ -f "kernel" ]; then
 dd if=setup.bin of=disk.img bs=512 seek=5
 else
 echo "kernel not exist"
 exit
 fi
-
+dd if=/dev/zero of=disk.img bs=512 seek=60 count=2820
+echo "success!"

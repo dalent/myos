@@ -3,7 +3,8 @@
 extern _main
 _pg_dir:;0x0000
 startup_32:
-		;修改寄存器的信息
+
+			;修改寄存器的信息
 		mov ax,0x10
 		mov ds,ax
 		mov es,ax
@@ -14,21 +15,30 @@ startup_32:
 
 size equ $ - _pg_dir
 
-
-resb 0x1000 - size
-pg0:
-resb 0x1000
-pg1:;0x2000
-resb 0x1000
-pg2:;0x3000
-resb 0x1000
-pg3:;;0x4000
-resb 0x1000
-		resb 1024
-		
 section .text
+times 0x1000 - size db 0
+pg0:
+times 0x1000 db 0
+pg1:;0x2000
+times 0x1000 db 0
+pg2:;0x3000
+times 0x1000 db 0
+pg3:;;0x4000
+times 0x1000 db 0
+		
+
+times 1024 db 0
+		
+
 after_page_tables:
+
+
+		push 0
+		push 0
+		push 0
+		push L6
 		push _main
+		
 		jmp setup_paging
 		
 L6:
@@ -45,7 +55,7 @@ setup_paging:
 		
 		mov dword[_pg_dir],     pg0 + 7;7是保护标志，可读可写
 		mov dword[_pg_dir + 4], pg1 + 7
-		mov dword[_pg_dir +8],  pg2 + 7
+		mov dword[_pg_dir + 8], pg2 + 7
 		mov dword[_pg_dir +12], pg3 + 7
 		
 		mov edi, pg3 + 4092
@@ -56,13 +66,12 @@ b:		stosd
 		sub eax, 0x1000
 		jge b
 		
-		xor eax,eax
+		mov eax,_pg_dir
 		mov cr3,eax
 		mov eax,cr0
-		or  eax,0x80000000
+		or  eax,0x80000001
 		mov cr0,eax
 		ret
-		
-section .bss
-		resb 4096
+section .text	
+		times 4096 db 0
 _sys_stack:
