@@ -25,22 +25,9 @@ pg2:;0x3000
 times 0x1000 db 0
 pg3:;;0x4000
 times 0x1000 db 0
-pg4:;1024*768必须提供更多的内存，来修改界面我测了一下大概在32M左右的样子
+pg4:;我想保存0xe0000000开始的4M的字节这个是vga的地址
 times 0x1000 db 0
-pg5:
-times 0x1000 db 0
-pg6:
-times 0x1000 db 0
-pg7:
-times 0x1000 db 0
-pg8:
-times 0x1000 db 0
-pg9:
-times 0x1000 db 0
-pg10:
-times 0x1000 db 0
-pg11:
-times 0x1000 db 0
+
 
 times 1024 db 0
 		
@@ -68,26 +55,29 @@ setup_paging:
 		cld
 		rep stosd
 		
-		mov dword[_pg_dir],     pg0  + 7;7是保护标志，可读可写
-		mov dword[_pg_dir + 4], pg1  + 7
-		mov dword[_pg_dir + 8], pg2  + 7
-		mov dword[_pg_dir +12], pg3  + 7
-		mov dword[_pg_dir +16], pg4  + 7
-		mov dword[_pg_dir +20], pg5  + 7
-		mov dword[_pg_dir +24], pg6  + 7
-		mov dword[_pg_dir +28], pg7  + 7
-		mov dword[_pg_dir +32], pg8  + 7
-		mov dword[_pg_dir +36], pg9  + 7
-		mov dword[_pg_dir +40], pg10 + 7
-		mov dword[_pg_dir +44], pg11 + 7
-		
-		mov edi, pg11 + 4092
-		mov eax, 0x2fff007
+		mov dword[_pg_dir],           pg0 + 7;7是保护标志，可读可写
+		mov dword[_pg_dir + 4],       pg1 + 7
+		mov dword[_pg_dir + 8],       pg2 + 7
+		mov dword[_pg_dir +12],       pg3 + 7
+		mov dword[_pg_dir + 0x380*4], pg4 + 7;
+
+		mov edi, pg3 + 0x1000 - 4
+		mov eax, 0xfff007
 		std
 b:		stosd
 		
 		sub eax, 0x1000
 		jge b
+		
+		mov ecx, 1024;1024项
+		mov edi,pg4
+		mov eax,0xe0000007
+		cld 
+c:	    stosd
+		add eax, 0x1000
+		sub ecx,1
+		cmp ecx,0
+		ja	c
 		
 		mov eax,_pg_dir
 		mov cr3,eax
