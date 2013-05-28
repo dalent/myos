@@ -1,0 +1,6 @@
+#display_library: sdl
+megs: 16
+mouse: enabled=0
+floppya: 1_44=./disk.img, status=inserted
+#load32bitOSImage: os=nullkernel, path=./disk.img
+boot: floppy

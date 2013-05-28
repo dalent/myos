@@ -136,7 +136,8 @@ ok1_read:
 ok2_read:
 		call read_track;读取数据
 		mov cx, ax  ;读取的数量
-		add ax,[cs:sread]		cmp ax,[cs:sectors]
+		add ax,[cs:sread]
+		cmp ax,[cs:sectors]
 		jne ok3_read
 		mov ax,1;读取了一个柱面了
 		sub ax,[cs:head];取当前的柱面

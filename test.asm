@@ -3,7 +3,7 @@ VRAM	EQU		0x90008			; ΩÁ√Êµÿ÷∑
 global  _main
 _main:
 		mov ecx,0xfff
-		mov esi,0xe0000000
+		mov esi,[VRAM]
 L1:	
 		mov byte[ds:esi],10
 		inc esi
