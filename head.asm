@@ -14,7 +14,9 @@ startup_32:
 		jmp after_page_tables
 
 size equ $ - _pg_dir
-
+;我们现在只是保存16M的内存，所以4个页表 ，4*1024* 4k=16M就可以了
+;但是我们的界面模式是1024*768，我在我的机器上测试界面的地址是0xe0000000，所我
+;得额外的增加一个页面的映射来保存0xe0000000的地址
 section .text
 times 0x1000 - size db 0
 pg0:
@@ -38,7 +40,9 @@ after_page_tables:
 		push 0
 		push 0
 		push 0
+		;假设main函数返回的话会从栈里面取的这个地址，进入死循环
 		push L6
+		;我们通过ret，来跳转到main函数
 		push _main
 		
 		jmp setup_paging
@@ -49,7 +53,7 @@ L6:
 		
 alignb 4
 setup_paging:
-		mov ecx,1024*4;一个页目录四个页表
+		mov ecx,1024*4;一个页目录，我们在写五个页表
 		xor eax,eax
 		xor edi,edi
 		cld
@@ -79,10 +83,10 @@ c:	    stosd
 		cmp ecx,0
 		ja	c
 		
-		mov eax,_pg_dir
+		mov eax,_pg_dir;页目录基址
 		mov cr3,eax
 		mov eax,cr0
-		or  eax,0x80000001
+		or  eax,0x80000001;开启分页
 		mov cr0,eax
 		ret
 section .text	

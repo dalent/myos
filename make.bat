@@ -1,11 +1,20 @@
-del /Q .\bin\*.bin
-nasm -o .\bin\bootloader.bin bootloader.asm
+set bin_path=windows_bin
+set mm=.\mm
 
-nasm -o .\bin\setup.bin setup.asm
-nasm  -f aout -o .\bin\test.o test.asm
-nasm  -f aout -o .\bin\head.o head.asm
-ld -T link.ld  -o .\bin\kernel .\bin\head.o .\bin\test.o 
-rem del /Q .\bin\*.o
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
+cd %mm%
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o me.o memory.c
+copy *.o .\..\%bin_path%\
+del *.o
+cd ..\%bin_path%
+del /Q *.bin
+nasm -o bootloader.bin ..\bootloader.asm
+
+nasm -o setup.bin ..\setup.asm
+nasm  -f aout -o head.o ..\head.asm
+
+ld -T ..\link.ld -Map map.txt -o kernel head.o m.o me.o
+del /Q *.o
 
 
 pause

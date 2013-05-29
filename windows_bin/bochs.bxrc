@@ -1,5 +1,5 @@
 megs: 16
 mouse: enabled=0
 romimage: file=$BXSHARE/BIOS-bochs-latest
-floppya: 1_44=C:\github\myos\bin\disk.img, status=inserted   (1.44M 3.5"  media)
+floppya: 1_44=.\disk.img, status=inserted   (1.44M 3.5"  media)
 boot: floppy

@@ -1,0 +1,39 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+
+.text           0x00000000     0x75d0
+                0x00000000                code = .
+ *(.text)
+ .text          0x00000000     0x7498 head.o
+ *fill*         0x00007498        0x8 
+ .text          0x000074a0       0xb0 m.o
+                0x000074a0                _main
+ .text          0x00007550       0x80 me.o
+                0x00007550                _mem_init
+                0x000075d0                data = .
+
+.data           0x000075d0      0xfb8
+ *(.rodata)
+ *(.data)
+ .data          0x000075d0        0x0 head.o
+ .data          0x000075d0       0x10 m.o
+ .data          0x000075e0        0x0 me.o
+ *(.bss)
+ .bss           0x000075e0        0x0 head.o
+ .bss           0x000075e0        0xc m.o
+ .bss           0x000075ec      0xf10 me.o
+ *(.*)
+ .comment       0x000084fc       0x14 m.o
+ .eh_frame      0x00008510       0x34 m.o
+ .comment       0x00008544       0x14 me.o
+ .eh_frame      0x00008558       0x30 me.o
+LOAD head.o
+LOAD m.o
+LOAD me.o
+OUTPUT(kernel binary)

@@ -2,11 +2,12 @@ INITSEG  EQU 0x9000
 SETUPSEG EQU 0x9020
 SYSSEG   EQU 0x1000
 
-LEDS	EQU		0x0001			;键盘状态
-VMODE	EQU		0x0002			; 真彩色位数
-SCRNX	EQU		0x0004			; x分辨率
-SCRNY	EQU		0x0006			; y分辨率
+LEDS	EQU		0x0000			;键盘状态
+VMODE	EQU		0x0001			; 真彩色位数
+SCRNX	EQU		0x0002			; x分辨率
+SCRNY	EQU		0x0004			; y分辨率
 VRAM	EQU		0x0008			; 界面地址
+MEMSIZE EQU		0x000c			;扩展内存大小
 VBEMODE EQU		0x105
 [bits 16]		
 ;我们首先把界面设置为1024*768，大部分机器都支持，如果不支持我们设置为320*200
@@ -49,7 +50,7 @@ VBEMODE EQU		0x105
 		mov word[SCRNY],ax
 		mov eax,[es:di+0x28]
 		mov dword[VRAM],eax
-		jmp keyboard
+		jmp extra_mem
 		
 		
 		
@@ -62,7 +63,10 @@ scrn320:
 		MOV		WORD [SCRNY],200		
 		MOV		DWORD [VRAM],0x000a0000
 		
-
+extra_mem:
+		mov ah,0x88;调用bios中0x15功能号0x88，返回ax=0x100000处开始的内存大小（kb）
+		int 0x15
+		mov [MEMSIZE],ax
 
 keyboard:
 		MOV		ah,0x02
