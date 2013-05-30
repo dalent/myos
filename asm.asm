@@ -2,7 +2,7 @@
 _divide_error:
 		push _do_divide_error
 no_error_code:
-		xchg eax [esp]
+		xchg eax, [esp]
 		push ebx
 		push ecx
 		push edx
@@ -13,7 +13,7 @@ no_error_code:
 		push es
 		push fs
 		push 0;error code
-		lea edx,44[esp]
+		lea edx,[esp + 44]
 		push edx
 		mov ax,ss
 		mov ds,ax
@@ -60,19 +60,19 @@ _reserved:;int15 保留
 _irq13:;int45  数字协处理器发出中断
 		push eax
 		xor al,al
-		out 0xF0 al
+		out 0xF0, al
 		mov al,0x20
 		out 0x20,al
-		jmp 1f
-1f:		jmp 2f
-2f:		out 0xa0,al
+		jmp f1
+f1:		jmp f2
+f2:		out 0xa0,al
 		pop eax
 		jmp _coprocessor_error
 _double_fault:
 		push _do_double_fault
 error_code:
-		xchg eax 4[esp]
-		xchg ebx [esp]
+		xchg eax, [esp + 4]
+		xchg ebx, [esp]
 		push ecx
 		push edx
 		push edi
@@ -82,7 +82,7 @@ error_code:
 		push es
 		push fs
 		push eax
-		lea eax 44[esp]
+		lea eax, [esp + 44]
 		push eax
 		mov  ax,ss
 		mov ds,ax
