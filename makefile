@@ -11,11 +11,12 @@ CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer \
 	$(cc) $(CFLAGS) -o $@ $<
 all:$(binary_src) $(kernel)
 $(binary_src): %.bin : %.asm
-	$(nasm) -o $@ $<
+	$(nasm) -o $(dir_fold)/$@ $<
 $(kernel):main.o head.o %(lib)
 	rm -f $(dir_fold)/$@
-	ld -T link.ld -o $(dir_fold)/$@ head.o main.o $(lib)
+	-ld -T link.ld -o $(dir_fold)/$@ head.o main.o $(lib)
 	rm -f *.o
+	rm -f $(lib)
 main.o:main.c
 head.o:head.asm
 	nasm -f aout -o $@ $<
