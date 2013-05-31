@@ -1,0 +1,1 @@
+#define outb(value,port) __asm__("outb %%al, %%dx"::"a"(value),"d"(port));//硬件端口字节输出函数#define inb(port) ({unsigned char _v; __asm__ __volatile__("inb %%dx, %%al":"=a"(_v):"d"(port);_v;})//硬件端口字节输入函数

@@ -1,4 +1,18 @@
 [bits 32]
+global _debug 
+global _nmi
+global _int3 
+global _over_flow
+global _bounds
+global _invalid_op
+global _coprocessor_segment_overrun
+global _reserved
+global _irq13
+global _double_fault
+global _invalid_TSS
+global _segment_not_present
+global _stack_segment
+global _general_protection
 _divide_error:
 		push _do_divide_error
 no_error_code:
