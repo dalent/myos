@@ -2,7 +2,7 @@
 global _debug 
 global _nmi
 global _int3 
-global _over_flow
+global _overflow
 global _bounds
 global _invalid_op
 global _coprocessor_segment_overrun
@@ -13,6 +13,23 @@ global _invalid_TSS
 global _segment_not_present
 global _stack_segment
 global _general_protection
+global _divide_error
+extern _do_debug
+extern _do_nmi
+extern _do_int3
+extern _do_over_flow
+extern _do_bounds
+extern _do_invalid_op
+extern _do_coprocessor_segment_overrun
+extern _do_reserved
+extern _do_irq13
+extern _do_double_fault
+extern _do_invalid_TSS
+extern _do_segment_not_present
+extern _do_general_protection
+extern _do_divide_error
+extern _do_overflow
+extern _do_stack_segment
 _divide_error:
 		push _do_divide_error
 no_error_code:
@@ -55,8 +72,8 @@ _nmi:	;int2 非屏蔽中断的调用入口
 _int3:	;int3 断点指令引起的中断入口，处理过程同_debug
 		push _do_int3
 		jmp no_error_code
-_over_flow:;int4  溢出出错的中断入口点
-		push _do_overfolw
+_overflow:    ;int4  溢出出错的中断入口点
+		push _do_overflow
 		jmp no_error_code
 _bounds:;int5 边界检测
 		push _do_bounds
@@ -81,7 +98,7 @@ _irq13:;int45  数字协处理器发出中断
 f1:		jmp f2
 f2:		out 0xa0,al
 		pop eax
-		jmp _coprocessor_error
+		jmp no_error_code
 _double_fault:
 		push _do_double_fault
 error_code:

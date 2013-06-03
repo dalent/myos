@@ -1,6 +1,7 @@
 ;这里地址是从0x0000000开始的，并且是32位模式的代码
 [bits 32]
 extern _main
+global _idt;
 _pg_dir:;0x0000
 startup_32:
 
@@ -11,8 +12,11 @@ startup_32:
 		mov fs,ax
 		mov gs,ax
 		mov esp, _sys_stack
+
 		jmp after_page_tables
 
+setup_idt:
+		
 size equ $ - _pg_dir
 ;我们现在只是保存16M的内存，所以4个页表 ，4*1024* 4k=16M就可以了
 ;但是我们的界面模式是1024*768，我在我的机器上测试界面的地址是0xe0000000，所我
@@ -89,6 +93,14 @@ c:	    stosd
 		or  eax,0x80000001;开启分页
 		mov cr0,eax
 		ret
+alignb 4
+db 0,0
+idt_descr:
+	dw 256*8-1
+	dd _idt
+alignb 8
+_idt:
+		times 256 * 8 db 0 ;256项每项8byte
 section .text	
 		times 4096 db 0
 _sys_stack:
