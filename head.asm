@@ -12,11 +12,9 @@ startup_32:
 		mov fs,ax
 		mov gs,ax
 		mov esp, _sys_stack
-
+		call setup_idt;
 		jmp after_page_tables
-
-setup_idt:
-		
+	
 size equ $ - _pg_dir
 ;我们现在只是保存16M的内存，所以4个页表 ，4*1024* 4k=16M就可以了
 ;但是我们的界面模式是1024*768，我在我的机器上测试界面的地址是0xe0000000，所我
@@ -36,6 +34,21 @@ times 0x1000 db 0
 
 
 times 1024 db 0
+setup_idt:
+		mov edx,ignore_int
+		mov  eax,0x80000
+		mov  ax,dx
+		mov dx,0x8e
+		mov edi,_idt
+		mov ecx,256
+rp_sidt:
+		mov [edi],eax
+		mov [edi+4],edx
+		add edi,8
+		dec ecx
+		jne rp_sidt
+		lidt [idt_descr]
+		ret
 		
 
 after_page_tables:
@@ -53,7 +66,12 @@ after_page_tables:
 		
 L6:
 		jmp L6
-
+alignb 4
+ignore_int:;我们什么也不做
+		pushad
+		popad
+		ret
+		
 		
 alignb 4
 setup_paging:

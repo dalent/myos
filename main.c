@@ -7,6 +7,7 @@ struct BOOT_INFO
 	short ext_mem_k;
 };
 extern void mem_init(long start, long end);
+extern void trap_init();
 static struct BOOT_INFO* boot_info = (struct BOOT_INFO*)BOOT_INFO_ADDR;
 static long memory_end = 0;//机器具有的内存字节数
 static long buffer_memory_end = 0;//高速缓冲区末端地址
@@ -27,5 +28,6 @@ void main()
 	
 	main_memory_start = buffer_memory_end;			//主内存区起始位置=缓冲区末端
 	mem_init(main_memory_start, memory_end);
+	trap_init();
 	for(;;);
 }

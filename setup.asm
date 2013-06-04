@@ -106,6 +106,9 @@ move:;我们把0x10000-0x8ffff中512k的内容转移到地址的0处。
 		mov ax,2*8
 		mov ds,ax
 		mov es,ax
+		mov ss,ax
+		mov fs,ax
+		mov gs,ax
 		mov esi,0x10000
 		mov edi,0x00000
 		mov ecx ,0x80000/4

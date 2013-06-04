@@ -3,6 +3,7 @@
 #define cli() __asm__("cli"::);
 #define nop() __asm__("nop"::);
 #define iret() __asm__("iret"::);
+//
 #define _set_gate(gate_addr, type, dpl, addr)\
 		__asm__("movw %%dx, %%ax\n\t"\
 		"movw %0, %%dx\n\t"\

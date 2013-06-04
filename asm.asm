@@ -46,10 +46,10 @@ no_error_code:
 		push 0;error code
 		lea edx,[esp + 44]
 		push edx
-		mov ax,ss
-		mov ds,ax
-		mov es,ax
-		mov fs,ax
+		mov dx,ss
+		mov ds,dx
+		mov es,dx
+		mov fs,dx
 		call eax
 		add esp,8
 		pop fs
