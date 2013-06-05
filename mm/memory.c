@@ -1,3 +1,6 @@
+#ifndef _MEMORY_C_
+#define _MEMORY_C_
+#include "../include/kernel.h"
 #define invalidate() __asm__("movl %%eax, %%cr3"::"a"(0))   //刷新叶变换高速缓存
 #define LOW_MEM 0x100000									//内存低端
 #define PAGING_MEMORY (15 * 1024 * 1024)                   //分页内存15M
@@ -8,6 +11,10 @@
 static long HIGH_MEMORY = 0;
 #define copy_page(from, to) __asm__("cld;rep;movsl"::"S"(from),"D"(to),"c"(1024):"cx","di","si")
 static unsigned char mem_map[PAGING_PAGES] ={0,};
+static inline volatile void oom()
+{
+	
+}
 void mem_init(long start_mem, long end_mem)
 {
 	int i;
@@ -23,3 +30,53 @@ void mem_init(long start_mem, long end_mem)
 	while(end_mem-- > 0)									//最后将这些可用页面对应的页面映射数组清零
 		mem_map[i++] = 0;
 }
+/*
+EFLAG 解释
+0	CF	Carry flag	Status
+1	1	Reserved	 
+2	PF	Parity flag	Status
+3	0	Reserved	 
+4	AF	Adjust flag	Status
+5	0	Reserved	 
+6	ZF	Zero flag	Status
+7	SF	Sign flag	Status
+8	TF	Trap flag (single step)	System
+9	IF	Interrupt enable flag	Control
+10	DF	Direction flag	Control
+11	OF	Overflow flag	Status
+12-13	IOPL	I/O privilege level (286+ only), always 1 on 8086 and 186	System
+14	NT	Nested task flag (286+ only), always 1 on 8086 and 186	System
+15	0	Reserved, always 1 on 8086 and 186, always 0 on later models	 
+*/
+unsigned long get_free_page()
+{
+	register unsigned long __res asm("ax");
+	__asm__("std;repne;scasb\n\t"                       //比较al 和[es:edi]的值设置相应的标志寄存器的值，如果df为0则增加edi，这里从后向前扫描
+			"jne 1f\n\t"									//没有找到
+			"movb $1,1(%%edi)\n\t"							//置1表示找到啦
+			"sall $12,%%ecx\n\t"							//左移12位4K，也就是计算与最低内存的偏移量
+			"addl %2,%%ecx\n\t"							   //加上最低内存也就是对应的线性地址
+			"movl %%ecx,%%edx\n\t"
+			"movl $1024,%%ecx\n\t"
+			"leal 4092(%%edx),%%edi\n\t"                 //把eax的值存储到[es:edi]中	
+			"rep;stosl\n\t"
+			"movl %%edx,%%eax\n"					
+			"1:"
+			:"=a"(__res)
+			:"0"(0),"i"(LOW_MEM),"c"(PAGING_PAGES),
+			"D"(mem_map + PAGING_PAGES - 1)
+			:"3","4","dx");
+	return __res;//返回空闲页面
+}
+
+void free_pages(unsigned long addr)
+{
+	if(addr < LOW_MEM) return;
+	if(addr >= HIGH_MEMORY)	   panic("trying to free noneexistent page!");
+	addr -= LOW_MEM;
+	addr >>=12;
+	if(mem_map[addr]--) return;
+	mem_map[addr] = 0;
+	panic("trying to free free page!");
+}
+#endif

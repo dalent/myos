@@ -12,7 +12,7 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x00000000     0x8450
+.text           0x00000000     0x8530
                 0x00000000                code = .
  *(.text)
  .text          0x00000000     0x7cd8 head.o
@@ -20,66 +20,69 @@ Linker script and memory map
  *fill*         0x00007cd8        0x8 
  .text          0x00007ce0       0xb0 m.o
                 0x00007ce0                _main
- .text          0x00007d90       0x80 me.o
-                0x00007d90                _mem_init
- .text          0x00007e10       0xd0 asm.o
-                0x00007e10                _divide_error
-                0x00007e44                _debug
-                0x00007e4b                _nmi
-                0x00007e52                _int3
-                0x00007e59                _overflow
-                0x00007e60                _bounds
-                0x00007e67                _invalid_op
-                0x00007e6e                _coprocessor_segment_overrun
-                0x00007e75                _reserved
-                0x00007e7c                _irq13
-                0x00007e8e                _double_fault
-                0x00007ec3                _invalid_TSS
-                0x00007eca                _segment_not_present
-                0x00007ed1                _stack_segment
-                0x00007ed8                _general_protection
- .text          0x00007ee0      0x570 t.o
-                0x00007eef                _do_double_fault
-                0x00007f25                _do_general_protection
-                0x00007f55                _do_divide_error
-                0x00007f78                _do_int3
-                0x00007f7d                _do_nmi
-                0x00007fa6                _do_debug
-                0x00007fc9                _do_overflow
-                0x00007ff3                _do_bounds
-                0x00008026                _do_invalid_op
-                0x0000805f                _do_device_not_available
-                0x0000809e                _do_coprocessor_segment_overrun
-                0x000080cd                _do_invalid_TSS
-                0x00008104                _do_segment_not_present
-                0x00008135                _do_stack_segment
-                0x0000816a                _do_coprocessor_rror
-                0x00008196                _do_reserved
-                0x000081b9                _trap_init
-                0x00008450                data = .
+ .text          0x00007d90      0x160 me.o
+                0x00007d90                _panic
+                0x00007d91                _mem_init
+                0x00007e04                _get_free_page
+                0x00007e7c                _free_pages
+ .text          0x00007ef0       0xd0 asm.o
+                0x00007ef0                _divide_error
+                0x00007f24                _debug
+                0x00007f2b                _nmi
+                0x00007f32                _int3
+                0x00007f39                _overflow
+                0x00007f40                _bounds
+                0x00007f47                _invalid_op
+                0x00007f4e                _coprocessor_segment_overrun
+                0x00007f55                _reserved
+                0x00007f5c                _irq13
+                0x00007f6e                _double_fault
+                0x00007fa3                _invalid_TSS
+                0x00007faa                _segment_not_present
+                0x00007fb1                _stack_segment
+                0x00007fb8                _general_protection
+ .text          0x00007fc0      0x570 t.o
+                0x00007fcf                _do_double_fault
+                0x00008005                _do_general_protection
+                0x00008035                _do_divide_error
+                0x00008058                _do_int3
+                0x0000805d                _do_nmi
+                0x00008086                _do_debug
+                0x000080a9                _do_overflow
+                0x000080d3                _do_bounds
+                0x00008106                _do_invalid_op
+                0x0000813f                _do_device_not_available
+                0x0000817e                _do_coprocessor_segment_overrun
+                0x000081ad                _do_invalid_TSS
+                0x000081e4                _do_segment_not_present
+                0x00008215                _do_stack_segment
+                0x0000824a                _do_coprocessor_rror
+                0x00008276                _do_reserved
+                0x00008299                _trap_init
+                0x00008530                data = .
 
-.data           0x00008450     0x119c
+.data           0x00008530     0x11f4
  *(.rodata)
  *(.data)
- .data          0x00008450        0x0 head.o
- .data          0x00008450       0x10 m.o
- .data          0x00008460        0x0 me.o
- .data          0x00008460        0x0 asm.o
- .data          0x00008460        0x0 t.o
+ .data          0x00008530        0x0 head.o
+ .data          0x00008530       0x10 m.o
+ .data          0x00008540        0x0 me.o
+ .data          0x00008540        0x0 asm.o
+ .data          0x00008540        0x0 t.o
  *(.bss)
- .bss           0x00008460        0x0 head.o
- .bss           0x00008460        0xc m.o
- .bss           0x0000846c      0xf10 me.o
- *fill*         0x0000937c        0x4 
- .bss           0x00009380        0x0 asm.o
- .bss           0x00009380        0x0 t.o
+ .bss           0x00008540        0x0 head.o
+ .bss           0x00008540        0xc m.o
+ .bss           0x0000854c      0xf10 me.o
+ *fill*         0x0000945c        0x4 
+ .bss           0x00009460        0x0 asm.o
+ .bss           0x00009460        0x0 t.o
  *(.*)
- .comment       0x00009380       0x14 m.o
- .eh_frame      0x00009394       0x34 m.o
- .comment       0x000093c8       0x14 me.o
- .eh_frame      0x000093dc       0x30 me.o
- .comment       0x0000940c       0x14 t.o
- .eh_frame      0x00009420      0x1cc t.o
+ .comment       0x00009460       0x14 m.o
+ .eh_frame      0x00009474       0x34 m.o
+ .comment       0x000094a8       0x14 me.o
+ .eh_frame      0x000094bc       0x88 me.o
+ .comment       0x00009544       0x14 t.o
+ .eh_frame      0x00009558      0x1cc t.o
 LOAD head.o
 LOAD m.o
 LOAD me.o
@@ -87,6 +90,6 @@ LOAD asm.o
 LOAD t.o
 OUTPUT(kernel binary)
 
-.bss            0x000095ec     0x1000
- COMMON         0x000095ec     0x1000 t.o
-                0x000095ec                _pg_dir
+.bss            0x00009724     0x1000
+ COMMON         0x00009724     0x1000 t.o
+                0x00009724                _pg_dir
