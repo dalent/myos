@@ -1,4 +1,9 @@
 #define BOOT_INFO_ADDR 0x90000
+#ifdef DJGPP
+#define main main
+#else
+#define main _main
+#endif
 struct BOOT_INFO
 {
 	char led,vmode;

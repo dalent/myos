@@ -12,17 +12,21 @@ CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer \
 all:$(binary_src) $(kernel)
 $(binary_src): %.bin : %.asm
 	$(nasm) -o $(dir_fold)/$@ $<
-$(kernel):main.o head.o %(lib)
+$(kernel):head.o main.o asm.o trap.o mm/mm.a lib/lib.a
 	rm -f $(dir_fold)/$@
-	-ld -T link.ld -o $(dir_fold)/$@ head.o main.o $(lib)
+	-ld -T link.ld -Map $(dir_fold)/map -o $(dir_fold)/$@ $^
 	rm -f *.o
 	rm -f $(lib)
 main.o:main.c
+trap.o:trap.c
 head.o:head.asm
 	nasm -f aout -o $@ $<
-
-%(lib):
+asm.o:asm.asm
+	nasm -f aout -o $@ $<
+mm/mm.a:
 	(cd mm;make)
+lib/lib.a:
+	(cd lib;make)
 clean:
 	cd $(dir_fold);rm -rf *.bin *.o kernel *.img
 

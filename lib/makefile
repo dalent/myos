@@ -1,5 +1,5 @@
 cc = gcc
-objs=memory.o
+objs=malloc.o
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-nostdinc -fno-builtin -c 
 out = lib.a
@@ -8,5 +8,6 @@ out = lib.a
 all: $(objs)
 	rm -f  lib.a
 	ar rf lib.a $(objs)
+	ranlib lib.a
 	rm *.o
 malloc.o:malloc.c
