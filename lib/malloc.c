@@ -104,7 +104,7 @@ void * malloc(unsigned int len)
 		bdir->chain = bdesc;
 	}
 	retval = (void*)bdesc->freeptr;
-	bdesc->freeptr = *(void**)retval;
+	bdesc->freeptr = *((void**)retval);
 	bdesc->refcnt++;
 	sti();
 	return(retval);
