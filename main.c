@@ -14,6 +14,9 @@ static long buffer_memory_end = 0;//高速缓冲区末端地址
 static long main_memory_start = 0;//主内存开始的地址
 void main()
 {
+	char * ma;
+	char *ma1;
+	int i;
 	//在这里我们的界面起始有一部分地址，这部分地址因为远超16M内存了，所以貌似完全不用考虑了。
 	memory_end = (1 << 20) + (boot_info->ext_mem_k << 10);//内存大小=1M + 扩展内存（KB）*1024
 	memory_end &= 0xfffff000;						//忽略不足4k的内存数
@@ -29,5 +32,8 @@ void main()
 	main_memory_start = buffer_memory_end;			//主内存区起始位置=缓冲区末端
 	mem_init(main_memory_start, memory_end);
 	trap_init();
+	ma = malloc(12);
+	ma1 = malloc(12);
+	i = ma1 - ma;
 	for(;;);
 }

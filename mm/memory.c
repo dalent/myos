@@ -69,7 +69,7 @@ unsigned long get_free_page()
 	return __res;//·µ»Ø¿ÕÏÐÒ³Ãæ
 }
 
-void free_pages(unsigned long addr)
+void free_page(unsigned long addr)
 {
 	if(addr < LOW_MEM) return;
 	if(addr >= HIGH_MEMORY)	   panic("trying to free noneexistent page!");

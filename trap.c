@@ -54,7 +54,7 @@ __res;})
 #endif
 static void die(char * str, long esp_ptr, long nr)
 {
-	for(;;);
+	//for(;;);
 }
 
 void do_double_fault(long esp, long error_code)
@@ -213,6 +213,6 @@ void trap_init()
 	outb_p(inb_p(0x21)&0xfb, 0x21);
 	outb(inb_p(0xA1)&0xdf,0xA1);
 	sti();
-	j = 1/0;
+	//j = 1/0;
 	return ;
 }
