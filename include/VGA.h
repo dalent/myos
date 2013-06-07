@@ -8,7 +8,7 @@
 #define VGA_Magenta       6
 #define VGA_Brown         7
 #define VGA_Light_Gray    8
-#define VGA_Dark_Gray     9
+#define VGA_DARK_GRAY     9
 #define VGA_Light_Blue    10
 #define VGA_Light_Green   11
 #define VGA_Light_Cyan    12

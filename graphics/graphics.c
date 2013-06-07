@@ -1,6 +1,6 @@
 //图形编程的网址http://www.oocities.org/garyneal_71/OldPages/cGraphicsPalette.html
 //该函数负责填充一个矩形
-#include "../include/vga.h"
+#include "./../include/VGA.h"
 void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty)
 {
 	int x,y;
@@ -12,7 +12,8 @@ void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx,
 
 void init_screen(char *vram, int xsize, int ysize)
 {
-	fill_rectangle(vram, xsize, VGA_BlUE, 0, 0, xsize - 1, ysize - 29);
+	fill_rectangle(vram, xsize, VGA_BlUE, 0, 0, xsize - 1, ysize - 100);
+	fill_rectangle(vram, xsize, VGA_DARK_GRAY, 0, ysize - 100, xsize - 1, ysize);
 }
 
 
