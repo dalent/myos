@@ -34,8 +34,10 @@ static inline void init_bucket_desc()
 	int i;
 	first = bdesc = (struct bucket_desc*)get_free_page();
 	if(!bdesc)
+	{
 		panic("out of memory in init_bucket_desc()");
 		return;
+	}
 	for(i = PAGE_SIZE/sizeof(struct bucket_desc); i > 1; i--)
 	{
 		bdesc->next = bdesc + 1;

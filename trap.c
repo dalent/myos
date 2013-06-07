@@ -189,7 +189,6 @@ extern void coprocessor_error();
 void trap_init()
 {
 	int i;
-	int j;
 	set_trap_gate(0, &divide_error);
 	set_trap_gate(1, &debug);
 	set_trap_gate(2, &nmi);

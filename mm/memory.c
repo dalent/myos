@@ -8,14 +8,14 @@
 #define MAP_NR(addr) (((addr)-LOW_MEM) >> 12)					//指定内存地址映射为页号
 #define USED 100										   //页面被占用标志
 #define CODE_SPACE(addr) ((((addr) + 4095)& ~4095) < current->stat_code + current->end_code)//判断给定的地址是否位于当前进程的代码段中
-static long HIGH_MEMORY = 0;
+unsigned long HIGH_MEMORY = 0;
 #define copy_page(from, to) __asm__("cld;rep;movsl"::"S"(from),"D"(to),"c"(1024):"cx","di","si")
-static unsigned char mem_map[PAGING_PAGES] ={0,};
+unsigned char mem_map[PAGING_PAGES] ={0,};
 static inline volatile void oom()
 {
 	
 }
-void mem_init(long start_mem, long end_mem)
+void mem_init(unsigned long start_mem, unsigned long end_mem)
 {
 	int i;
 	HIGH_MEMORY = end_mem;									//设置内存的最高端
@@ -50,7 +50,7 @@ EFLAG 解释
 */
 unsigned long get_free_page()
 {
-	register unsigned long __res asm("ax");
+	register unsigned long __res asm("eax");
 	__asm__("std;repne;scasb\n\t"                       //比较al 和[es:edi]的值设置相应的标志寄存器的值，如果df为0则增加edi，这里从后向前扫描
 			"jne 1f\n\t"									//没有找到
 			"movb $1,1(%%edi)\n\t"							//置1表示找到啦

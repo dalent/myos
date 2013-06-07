@@ -2,6 +2,9 @@
 [bits 32]
 extern _main
 global _idt;
+global pg0;
+global _pg_dir
+global setup_paging
 _pg_dir:;0x0000
 startup_32:
 
@@ -11,6 +14,12 @@ startup_32:
 		mov es,ax
 		mov fs,ax
 		mov gs,ax
+		mov ss,ax
+		xor eax,eax
+testA20:inc eax
+		mov dword[0x0000],eax
+		cmp eax, dword[0x100000]
+		je testA20
 		mov esp, _sys_stack
 		call setup_idt;
 		jmp after_page_tables
@@ -27,7 +36,8 @@ pg1:;0x2000
 times 0x1000 db 0
 pg2:;0x3000
 times 0x1000 db 0
-pg3:;;0x4000
+pg3:;;
+
 times 0x1000 db 0
 pg4:;我想保存0xe0000000开始的4M的字节这个是vga的地址
 times 0x1000 db 0
@@ -108,7 +118,7 @@ c:	    stosd
 		mov eax,_pg_dir;页目录基址
 		mov cr3,eax
 		mov eax,cr0
-		or  eax,0x80000001;开启分页
+		or  eax,0x80000000;开启分页
 		mov cr0,eax
 		ret
 alignb 4

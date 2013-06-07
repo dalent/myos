@@ -1,6 +1,7 @@
 set bin_path=windows_bin
 set mm=.\mm
 set mylib=.\..\lib
+set vga=.\..\graphics
 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
@@ -11,6 +12,11 @@ del *.o
 cd %mylib%
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o malloc.o malloc.c
 copy *.o .\..\%bin_path%\ 
+del *.o
+cd %vga%
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o graphics.o graphics.c
+copy *.o .\..\%bin_path%\ 
+del *.o
 cd ..\%bin_path%
 del /Q *.bin
 nasm -o bootloader.bin ..\bootloader.asm
@@ -18,7 +24,7 @@ nasm -o bootloader.bin ..\bootloader.asm
 nasm -o setup.bin ..\setup.asm
 nasm  -f aout -o head.o ..\head.asm
 nasm  -f aout -o asm.o ..\asm.asm
-set object=head.o m.o me.o asm.o t.o malloc.o
+set object=head.o m.o me.o asm.o t.o malloc.o graphics.o
 ld -T ..\link.ld -Map map.txt -o kernel %object%
 del /Q *.o
 

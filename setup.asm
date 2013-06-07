@@ -66,7 +66,8 @@ scrn320:
 extra_mem:
 		mov ah,0x88;调用bios中0x15功能号0x88，返回ax=0x100000处开始的内存大小（kb）
 		int 0x15
-		mov [MEMSIZE],ax
+		and eax,0x0000ffff
+		mov dword[MEMSIZE],eax
 
 keyboard:
 		MOV		ah,0x02

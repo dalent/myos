@@ -2,7 +2,7 @@
 Allocating common symbols
 Common symbol       size              file
 
-_pg_dir             0x1000            t.o
+_boot_info          0x10              m.o
 
 Memory Configuration
 
@@ -12,93 +12,109 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x00000000     0x87e0
+.text           0x00000000     0x8930
                 0x00000000                code = .
  *(.text)
  .text          0x00000000     0x7cd8 head.o
+                0x00000000                _pg_dir
+                0x00001000                pg0
+                0x00006448                setup_paging
                 0x000064d8                _idt
  *fill*         0x00007cd8        0x8 
- .text          0x00007ce0       0xe0 m.o
+ .text          0x00007ce0      0x130 m.o
                 0x00007ce0                _main
- .text          0x00007dc0      0x100 me.o
-                0x00007dc0                _mem_init
-                0x00007e33                _get_free_page
-                0x00007e6c                _free_page
- .text          0x00007ec0       0xd0 asm.o
-                0x00007ec0                _divide_error
-                0x00007ef4                _debug
-                0x00007efb                _nmi
-                0x00007f02                _int3
-                0x00007f09                _overflow
-                0x00007f10                _bounds
-                0x00007f17                _invalid_op
-                0x00007f1e                _coprocessor_segment_overrun
-                0x00007f25                _reserved
-                0x00007f2c                _irq13
-                0x00007f3e                _double_fault
-                0x00007f73                _invalid_TSS
-                0x00007f7a                _segment_not_present
-                0x00007f81                _stack_segment
-                0x00007f88                _general_protection
- .text          0x00007f90      0x550 t.o
-                0x00007f9e                _do_double_fault
-                0x00007fd4                _do_general_protection
-                0x00008004                _do_divide_error
-                0x00008027                _do_int3
-                0x0000802c                _do_nmi
-                0x00008055                _do_debug
-                0x00008078                _do_overflow
-                0x000080a2                _do_bounds
-                0x000080d5                _do_invalid_op
-                0x0000810e                _do_device_not_available
-                0x0000814d                _do_coprocessor_segment_overrun
-                0x0000817c                _do_invalid_TSS
-                0x000081b3                _do_segment_not_present
-                0x000081e4                _do_stack_segment
-                0x00008219                _do_coprocessor_rror
-                0x00008245                _do_reserved
-                0x00008268                _trap_init
- .text          0x000084e0      0x300 malloc.o
-                0x000084f9                _malloc
-                0x00008673                _free_s
-                0x000087e0                data = .
+ .text          0x00007e10      0x110 me.o
+                0x00007e10                _mem_init
+                0x00007e83                _get_free_page
+                0x00007ebc                _free_page
+ .text          0x00007f20       0xd0 asm.o
+                0x00007f20                _divide_error
+                0x00007f54                _debug
+                0x00007f5b                _nmi
+                0x00007f62                _int3
+                0x00007f69                _overflow
+                0x00007f70                _bounds
+                0x00007f77                _invalid_op
+                0x00007f7e                _coprocessor_segment_overrun
+                0x00007f85                _reserved
+                0x00007f8c                _irq13
+                0x00007f9e                _double_fault
+                0x00007fd3                _invalid_TSS
+                0x00007fda                _segment_not_present
+                0x00007fe1                _stack_segment
+                0x00007fe8                _general_protection
+ .text          0x00007ff0      0x550 t.o
+                0x00007ffe                _do_double_fault
+                0x00008034                _do_general_protection
+                0x00008064                _do_divide_error
+                0x00008087                _do_int3
+                0x0000808c                _do_nmi
+                0x000080b5                _do_debug
+                0x000080d8                _do_overflow
+                0x00008102                _do_bounds
+                0x00008135                _do_invalid_op
+                0x0000816e                _do_device_not_available
+                0x000081ad                _do_coprocessor_segment_overrun
+                0x000081dc                _do_invalid_TSS
+                0x00008213                _do_segment_not_present
+                0x00008244                _do_stack_segment
+                0x00008279                _do_coprocessor_rror
+                0x000082a5                _do_reserved
+                0x000082c8                _trap_init
+ .text          0x00008540      0x340 malloc.o
+                0x0000859f                _malloc
+                0x0000870f                _free_s
+ .text          0x00008880       0xb0 graphics.o
+                0x00008880                _fill_rectangle
+                0x000088dc                _init_screen
+                0x00008930                data = .
 
-.data           0x000087e0     0x12ac
+.data           0x00008930     0x12f8
  *(.rodata)
  *(.data)
- .data          0x000087e0        0x0 head.o
- .data          0x000087e0       0x10 m.o
- .data          0x000087f0        0x0 me.o
- .data          0x000087f0        0x0 asm.o
- .data          0x000087f0        0x0 t.o
- .data          0x000087f0       0x50 malloc.o
-                0x000087f0                _bucket_dir
+ .data          0x00008930        0x0 head.o
+ .data          0x00008930        0x0 m.o
+ .data          0x00008930        0x0 me.o
+ .data          0x00008930        0x0 asm.o
+ .data          0x00008930        0x0 t.o
+ .data          0x00008930       0x50 malloc.o
+                0x00008930                _bucket_dir
+ .data          0x00008980        0x0 graphics.o
  *(.bss)
- .bss           0x00008840        0x0 head.o
- .bss           0x00008840        0xc m.o
- .bss           0x0000884c      0xf10 me.o
- *fill*         0x0000975c        0x4 
- .bss           0x00009760        0x0 asm.o
- .bss           0x00009760        0x0 t.o
- .bss           0x00009760        0x4 malloc.o
-                0x00009760                _free_bucket_desc
+ .bss           0x00008980        0x0 head.o
+ .bss           0x00008980        0xc m.o
+                0x00008980                _memory_end
+                0x00008984                _buffer_memory_end
+                0x00008988                _main_memory_start
+ .bss           0x0000898c      0xf10 me.o
+                0x0000898c                _HIGH_MEMORY
+                0x0000899c                _mem_map
+ *fill*         0x0000989c        0x4 
+ .bss           0x000098a0        0x0 asm.o
+ .bss           0x000098a0        0x0 t.o
+ .bss           0x000098a0        0x4 malloc.o
+                0x000098a0                _free_bucket_desc
+ .bss           0x000098a4        0x0 graphics.o
  *(.*)
- .comment       0x00009764       0x14 m.o
- .eh_frame      0x00009778       0x34 m.o
- .comment       0x000097ac       0x14 me.o
- .eh_frame      0x000097c0       0x70 me.o
- .comment       0x00009830       0x14 t.o
- .eh_frame      0x00009844      0x1cc t.o
- .comment       0x00009a10       0x14 malloc.o
- .eh_frame      0x00009a24       0x68 malloc.o
+ .comment       0x000098a4       0x14 m.o
+ .eh_frame      0x000098b8       0x34 m.o
+ .comment       0x000098ec       0x14 me.o
+ .eh_frame      0x00009900       0x70 me.o
+ .comment       0x00009970       0x14 t.o
+ .eh_frame      0x00009984      0x1cc t.o
+ .comment       0x00009b50       0x14 malloc.o
+ .eh_frame      0x00009b64       0x68 malloc.o
+ .comment       0x00009bcc       0x14 graphics.o
+ .eh_frame      0x00009be0       0x48 graphics.o
 LOAD head.o
 LOAD m.o
 LOAD me.o
 LOAD asm.o
 LOAD t.o
 LOAD malloc.o
+LOAD graphics.o
 OUTPUT(kernel binary)
 
-.bss            0x00009a8c     0x1000
- COMMON         0x00009a8c     0x1000 t.o
-                0x00009a8c                _pg_dir
+.bss            0x00009c28       0x10
+ COMMON         0x00009c28       0x10 m.o
+                0x00009c28                _boot_info
