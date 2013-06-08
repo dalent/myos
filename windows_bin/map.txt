@@ -12,7 +12,7 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x00000000     0x8930
+.text           0x00000000     0x8ca0
                 0x00000000                code = .
  *(.text)
  .text          0x00000000     0x7cd8 head.o
@@ -64,48 +64,48 @@ Linker script and memory map
  .text          0x00008540      0x340 malloc.o
                 0x0000859f                _malloc
                 0x0000870f                _free_s
- .text          0x00008880       0xb0 graphics.o
+ .text          0x00008880      0x420 graphics.o
                 0x00008880                _fill_rectangle
                 0x000088dc                _init_screen
-                0x00008930                data = .
+                0x00008ca0                data = .
 
-.data           0x00008930     0x12f8
+.data           0x00008ca0     0x1304
  *(.rodata)
  *(.data)
- .data          0x00008930        0x0 head.o
- .data          0x00008930        0x0 m.o
- .data          0x00008930        0x0 me.o
- .data          0x00008930        0x0 asm.o
- .data          0x00008930        0x0 t.o
- .data          0x00008930       0x50 malloc.o
-                0x00008930                _bucket_dir
- .data          0x00008980        0x0 graphics.o
+ .data          0x00008ca0        0x0 head.o
+ .data          0x00008ca0        0x0 m.o
+ .data          0x00008ca0        0x0 me.o
+ .data          0x00008ca0        0x0 asm.o
+ .data          0x00008ca0        0x0 t.o
+ .data          0x00008ca0       0x50 malloc.o
+                0x00008ca0                _bucket_dir
+ .data          0x00008cf0        0x0 graphics.o
  *(.bss)
- .bss           0x00008980        0x0 head.o
- .bss           0x00008980        0xc m.o
-                0x00008980                _memory_end
-                0x00008984                _buffer_memory_end
-                0x00008988                _main_memory_start
- .bss           0x0000898c      0xf10 me.o
-                0x0000898c                _HIGH_MEMORY
-                0x0000899c                _mem_map
- *fill*         0x0000989c        0x4 
- .bss           0x000098a0        0x0 asm.o
- .bss           0x000098a0        0x0 t.o
- .bss           0x000098a0        0x4 malloc.o
-                0x000098a0                _free_bucket_desc
- .bss           0x000098a4        0x0 graphics.o
+ .bss           0x00008cf0        0x0 head.o
+ .bss           0x00008cf0        0xc m.o
+                0x00008cf0                _memory_end
+                0x00008cf4                _buffer_memory_end
+                0x00008cf8                _main_memory_start
+ .bss           0x00008cfc      0xf10 me.o
+                0x00008cfc                _HIGH_MEMORY
+                0x00008d0c                _mem_map
+ *fill*         0x00009c0c        0x4 
+ .bss           0x00009c10        0x0 asm.o
+ .bss           0x00009c10        0x0 t.o
+ .bss           0x00009c10        0x4 malloc.o
+                0x00009c10                _free_bucket_desc
+ .bss           0x00009c14        0x0 graphics.o
  *(.*)
- .comment       0x000098a4       0x14 m.o
- .eh_frame      0x000098b8       0x34 m.o
- .comment       0x000098ec       0x14 me.o
- .eh_frame      0x00009900       0x70 me.o
- .comment       0x00009970       0x14 t.o
- .eh_frame      0x00009984      0x1cc t.o
- .comment       0x00009b50       0x14 malloc.o
- .eh_frame      0x00009b64       0x68 malloc.o
- .comment       0x00009bcc       0x14 graphics.o
- .eh_frame      0x00009be0       0x48 graphics.o
+ .comment       0x00009c14       0x14 m.o
+ .eh_frame      0x00009c28       0x34 m.o
+ .comment       0x00009c5c       0x14 me.o
+ .eh_frame      0x00009c70       0x70 me.o
+ .comment       0x00009ce0       0x14 t.o
+ .eh_frame      0x00009cf4      0x1cc t.o
+ .comment       0x00009ec0       0x14 malloc.o
+ .eh_frame      0x00009ed4       0x68 malloc.o
+ .comment       0x00009f3c       0x14 graphics.o
+ .eh_frame      0x00009f50       0x54 graphics.o
 LOAD head.o
 LOAD m.o
 LOAD me.o
@@ -115,6 +115,6 @@ LOAD malloc.o
 LOAD graphics.o
 OUTPUT(kernel binary)
 
-.bss            0x00009c28       0x10
- COMMON         0x00009c28       0x10 m.o
-                0x00009c28                _boot_info
+.bss            0x00009fa4       0x10
+ COMMON         0x00009fa4       0x10 m.o
+                0x00009fa4                _boot_info

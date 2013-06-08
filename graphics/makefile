@@ -4,7 +4,7 @@ objs=graphics.o
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-nostdinc -fno-builtin -c 
 out = graphics.a
-.c.o:
+.c.o:  
 	$(cc) $(CFLAGS) -o $@ $<
 all: $(objs)
 	rm -f  $(out)

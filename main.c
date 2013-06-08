@@ -4,6 +4,8 @@
 #else
 #define main _main
 #endif
+#include "./include/io.h"
+#include"./include/time.h"
 struct BOOT_INFO
 {
 	char led,vmode;
@@ -18,6 +20,23 @@ struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
 unsigned long main_memory_start = 0;//主内存开始的地址
+#define CMOS_READ(addr) ({\//读取cmos时钟
+outb(0x80|addr, 0x70);\     //0x70 CMOS register addr
+inb_p(0x71);\
+})
+static void time_init(void)
+{
+	struct tm time;
+	do{
+		time.tm_sec = CMOS_READ(0);
+		time.tm_min = COMS_READ(2);
+		time.tm_hour = CMOS_READ(4);
+		time.tm_mday = CMOS_READ(7);
+		time.tm_mon = CMOS_READ(8);
+		time.tm_year = CMOS_READ(9);
+	}while(time.tm_sec != CMOS_READ(0));
+	
+}
 void main()
 {
 	int i = 0;
@@ -42,5 +61,7 @@ void main()
 	mem_init(main_memory_start, memory_end);
 	trap_init();
 	init_screen(boot_info.vram, boot_info.scrnx, boot_info.scrny);
+	init_pic();
+	time_init();
 	for(;;);
 }

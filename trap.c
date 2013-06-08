@@ -191,20 +191,20 @@ void trap_init()
 	int i;
 	set_trap_gate(0, &divide_error);
 	set_trap_gate(1, &debug);
-	set_trap_gate(2, &nmi);
-	set_trap_gate(3, &int3);
+	set_trap_gate(2, &nmi);//int 3-5 can be called from all
+	set_system_gate(3, &int3);
 	set_system_gate(4, &overflow);
 	set_system_gate(5, &bounds);
-	set_system_gate(6, & invalid_op);
-	//set_system_gate(7, & device_not_available);
-	set_system_gate(8, & double_fault);
-	set_system_gate(9, & coprocessor_segment_overrun);
-	set_system_gate(10, & invalid_TSS);
-	set_system_gate(11, & segment_not_present);
-	set_system_gate(12, & stack_segment);
-	set_system_gate(13, & general_protection);
+	set_trap_gate(6, & invalid_op);
+	//set_trap_gate(7, & device_not_available);
+	set_trap_gate(8, & double_fault);
+	set_trap_gate(9, & coprocessor_segment_overrun);
+	set_trap_gate(10, & invalid_TSS);
+	set_trap_gate(11, & segment_not_present);
+	set_trap_gate(12, & stack_segment);
+	set_trap_gate(13, & general_protection);
 	//set_system_gate(14, & page_fault);
-	set_system_gate(15, & reserved);
+	set_trap_gate(15, & reserved);
 	//set_system_gate(16, & coprocessor_error);
 	for(i=17; i < 48; i++)
 		set_trap_gate(i, &reserved);
