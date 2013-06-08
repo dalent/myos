@@ -31,20 +31,20 @@ void PIC_remap(int offset1, int offset2)
 	
 	a1 = inb(MASTER_PIC_DATA);   //save masks
 	a2 = inb(SLAVE_PIC_DATA);   
-	outb_p(MASTER_PIC_DATA,  0xff  );//禁用主pic中断
-	outb_p(SLAVE_PIC_DATA,  0xff  ); //禁用从pic中断
 	
-	outb_p(MASTER_PIC_COMMAND, ICW1_INIT + ICW1_ICW4);// starts the initialization sequence (cascade mode)
-	outb_p(SLAVE_PIC_COMMAND, ICW1_INIT + ICW1_ICW4);
+	outb_p( ICW1_INIT + ICW1_ICW4,MASTER_PIC_COMMAND);// starts the initialization sequence (cascade mode)
+	outb_p(ICW1_INIT + ICW1_ICW4, SLAVE_PIC_COMMAND);
 	
-	outb_p(MASTER_PIC_DATA, offset1);
-	outb_p(SLAVE_PIC_DATA, offset2);
+	outb_p( offset1, MASTER_PIC_DATA);
+	outb_p( offset2, SLAVE_PIC_DATA);
 	
-	outb_p(MASTER_PIC_DATA, 1<<2);//tell the master there is a slave PIC at irq2
-	outb_p(SLAVE_PIC_DATA, 2);//tell slave pic ints cascade identify 2
+	outb_p( 1<<2, MASTER_PIC_DATA);//tell the master there is a slave PIC at irq2
+	outb_p(2, SLAVE_PIC_DATA);//tell slave pic ints cascade identify 2
 	
-	outb(MASTER_PIC_DATA, a1);
-	outb(SLAVE_PIC_DATA, a2);
+	outb_p( ICW4_8086, MASTER_PIC_DATA);
+	outb_p(ICW4_8086, SLAVE_PIC_DATA);
+	outb( a1, MASTER_PIC_DATA);
+	outb(a2, SLAVE_PIC_DATA);
 }
 //禁用某个中断
 void IRQ_Set_mask(unsigned char IRQline)
@@ -82,6 +82,6 @@ void IRQ_Clear_mask(unsigned char IRQline)
 
 void init_pic()
 {
-    PIC_remap(0x20, 0x30);
+    PIC_remap(0x20, 0x28);
 }
 
