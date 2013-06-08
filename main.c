@@ -20,16 +20,14 @@ struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
 unsigned long main_memory_start = 0;//主内存开始的地址
-#define CMOS_READ(addr) ({\//读取cmos时钟
-outb(0x80|addr, 0x70);\     //0x70 CMOS register addr
-inb_p(0x71);\
-})
+#define CMOS_READ(addr)\
+ ({ outb_p(0x80|addr, 0x70);inb_p(0x71);})
 static void time_init(void)
 {
 	struct tm time;
 	do{
 		time.tm_sec = CMOS_READ(0);
-		time.tm_min = COMS_READ(2);
+		time.tm_min = CMOS_READ(2);
 		time.tm_hour = CMOS_READ(4);
 		time.tm_mday = CMOS_READ(7);
 		time.tm_mon = CMOS_READ(8);
@@ -42,10 +40,6 @@ void main()
 	int i = 0;
 	//在这里我们的界面起始有一部分地址，这部分地址因为远超16M内存了，所以貌似完全不用考虑了。
 	boot_info = *((struct BOOT_INFO*)BOOT_INFO_ADDR);
-	for(;i < boot_info.scrnx * boot_info.scrny; i++)
-	{
-		boot_info.vram[i] = 15;
-	}
 	memory_end = (unsigned long)(1 << 20) + (((unsigned long)boot_info.ext_mem_k) << 10);//内存大小=1M + 扩展内存（KB）*1024
 	memory_end &= 0xfffff000;						//忽略不足4k的内存数
 	if(memory_end > 16 * 1024 * 1024)				//暂时如果内存超过16M，按照16M计算

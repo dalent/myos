@@ -1,4 +1,4 @@
-#include "./include/io.h"
+#include "./../include/io.h"
 #define MASTER_PIC_COMMAND 0x20
 #define MASTER_PIC_DATA    0x21
 #define SLAVE_PIC_COMMAND  0xA0
@@ -27,12 +27,12 @@ void PIC_sendEOI(unsigned char irq)
 
 void PIC_remap(int offset1, int offset2)
 {
-	unsigned char al, a2;
+	unsigned char a1, a2;
 	
 	a1 = inb(MASTER_PIC_DATA);   //save masks
 	a2 = inb(SLAVE_PIC_DATA);   
-	io_out8(PIC0_IMR,  0xff  );//禁用主pic中断
-	io_out8(PIC1_IMR,  0xff  ); //禁用从pic中断
+	outb_p(MASTER_PIC_DATA,  0xff  );//禁用主pic中断
+	outb_p(SLAVE_PIC_DATA,  0xff  ); //禁用从pic中断
 	
 	outb_p(MASTER_PIC_COMMAND, ICW1_INIT + ICW1_ICW4);// starts the initialization sequence (cascade mode)
 	outb_p(SLAVE_PIC_COMMAND, ICW1_INIT + ICW1_ICW4);
@@ -44,7 +44,7 @@ void PIC_remap(int offset1, int offset2)
 	outb_p(SLAVE_PIC_DATA, 2);//tell slave pic ints cascade identify 2
 	
 	outb(MASTER_PIC_DATA, a1);
-	outb(MASTER_PIC_DATA, a2);
+	outb(SLAVE_PIC_DATA, a2);
 }
 //禁用某个中断
 void IRQ_Set_mask(unsigned char IRQline)
@@ -64,7 +64,7 @@ void IRQ_Set_mask(unsigned char IRQline)
 }
 
 //开启某个中断
-void IRQ_Set_mask(unsigned char IRQline)
+void IRQ_Clear_mask(unsigned char IRQline)
 {
 	unsigned short port;
 	unsigned char value;
@@ -79,3 +79,9 @@ void IRQ_Set_mask(unsigned char IRQline)
 	value = inb(port) | ~(1 << IRQline);
 	outb(port, value);
 }
+
+void init_pic()
+{
+    PIC_remap(0x20, 0x30);
+}
+
