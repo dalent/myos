@@ -146,6 +146,7 @@ _general_protection:;int13 一般保护性出错
 		jmp error_code
 
 
+
 		
 		
 		

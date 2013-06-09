@@ -1,5 +1,6 @@
 #memory: guest=64,host=32
 megs: 64
+keyboard: type=at, serial_delay=250
 mouse: enabled=0
 romimage: file=$BXSHARE/BIOS-bochs-latest
 floppya: 1_44=.\disk.img, status=inserted   (1.44M 3.5"  media)

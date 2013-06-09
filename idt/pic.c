@@ -5,7 +5,7 @@
 #define SLAVE_PIC_DATA     0xA1
 #define PIC_EOI 0x20
 //中断完成发送域
-void PIC_sendEOI(unsigned char irq)
+inline void PIC_sendEOI(unsigned char irq)
 {	
 	if(irq >= 8)
 		outb(SLAVE_PIC_COMMAND, PIC_EOI);
@@ -43,8 +43,8 @@ void PIC_remap(int offset1, int offset2)
 	
 	outb_p( ICW4_8086, MASTER_PIC_DATA);
 	outb_p(ICW4_8086, SLAVE_PIC_DATA);
-	outb( a1, MASTER_PIC_DATA);
-	outb(a2, SLAVE_PIC_DATA);
+	outb( 0x0, MASTER_PIC_DATA);
+	outb(0x0, SLAVE_PIC_DATA);
 }
 //禁用某个中断
 void IRQ_Set_mask(unsigned char IRQline)

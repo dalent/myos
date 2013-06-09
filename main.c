@@ -15,7 +15,9 @@ struct BOOT_INFO
 };
 extern void mem_init(long start, long end);
 void init_screen(char *vram, int xsize, int ysize);
+void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s);
 extern void trap_init();
+extern void kbd_init();
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
@@ -57,5 +59,6 @@ void main()
 	init_screen(boot_info.vram, boot_info.scrnx, boot_info.scrny);
 	init_pic();
 	time_init();
+	kbd_init();
 	for(;;);
 }

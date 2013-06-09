@@ -10,6 +10,30 @@ void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx,
 			vram[y * xsize + x] = c;
 }
 
+inline void draw_char(char *vram, int xsize, char color, int posx, int posy, char s)
+{
+	draw_char8(vram,xsize ,color,posx,posy , s);
+}
+
+void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s)
+{
+	extern char  hankaku[4096];
+	int i;
+	char *p;
+	char *font = hankaku + s * 16;
+	for(i = 0; i < 16; i++)
+	{
+		p = &vram[(posy + i) * xsize + posx];
+		if((font[i] & 0x80) != 0) p[0] = color;
+		if((font[i] & 0x40) != 0) p[1] = color;
+		if((font[i] & 0x20) != 0) p[2] = color;
+		if((font[i] & 0x10) != 0) p[3] = color;
+		if((font[i] & 0x08) != 0) p[4] = color;
+		if((font[i] & 0x04) != 0) p[5] = color;
+		if((font[i] & 0x02) != 0) p[6] = color;
+		if((font[i] & 0x01) != 0) p[7] = color;
+	}
+}
 
 void init_screen(char *vram, int xsize, int ysize)
 {
@@ -24,12 +48,14 @@ void init_screen(char *vram, int xsize, int ysize)
 	fill_rectangle(vram, xsize, VGA_DARK_GRAY, 59,         ysize - 23, 59,         ysize - 5);//暗灰色
 	fill_rectangle(vram, xsize, VGA_BLACK,     2,          ysize - 3,  60,         ysize - 3);//黑色线
 	fill_rectangle(vram, xsize, VGA_BLACK,     60,         ysize - 24, 60,         ysize - 3);//黑色线
-	//画右边的显示时间的按钮
+	//画右边的显示时间的凹陷
 	fill_rectangle(vram, xsize, VGA_DARK_GRAY, xsize - 47, ysize - 24, xsize -  4, ysize - 24);
 	fill_rectangle(vram, xsize, VGA_DARK_GRAY, xsize - 47, ysize - 23, xsize - 47, ysize -  4);
 	fill_rectangle(vram, xsize, VGA_WHITE,     xsize - 47, ysize -  3, xsize -  4, ysize -  3);
 	fill_rectangle(vram, xsize, VGA_WHITE,     xsize -  3, ysize - 24, xsize -  3, ysize -  3);
 }
+
+
 
 
 
