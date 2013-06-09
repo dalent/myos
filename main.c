@@ -58,7 +58,8 @@ void main()
 	trap_init();
 	init_screen(boot_info.vram, boot_info.scrnx, boot_info.scrny);
 	init_pic();
-	time_init();
+	//time_init();
 	kbd_init();
-	for(;;);
+	for(;;)
+	__asm__ __volatile__("hlt");
 }

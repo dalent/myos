@@ -66,8 +66,8 @@ Linker script and memory map
                 0x000087ff                _free_s
  .text          0x00008970      0x5f0 graphics.o
                 0x00008970                _fill_rectangle
-                0x000089cc                _draw_char
-                0x00008a19                _draw_char8
+                0x000089cc                _draw_char8
+                0x00008b40                _draw_char
                 0x00008b8d                _init_screen
  .text          0x00008f60      0x1f0 pic.o
                 0x00008f60                _PIC_sendEOI

@@ -9,12 +9,6 @@ void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx,
 		for(x = srcx; x <= destx; x++)
 			vram[y * xsize + x] = c;
 }
-
-inline void draw_char(char *vram, int xsize, char color, int posx, int posy, char s)
-{
-	draw_char8(vram,xsize ,color,posx,posy , s);
-}
-
 void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s)
 {
 	extern char  hankaku[4096];
@@ -34,6 +28,13 @@ void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s)
 		if((font[i] & 0x01) != 0) p[7] = color;
 	}
 }
+
+inline void draw_char(char *vram, int xsize, char color, int posx, int posy, char s)
+{
+	draw_char8(vram,xsize ,color,posx,posy , s);
+}
+
+
 
 void init_screen(char *vram, int xsize, int ysize)
 {
