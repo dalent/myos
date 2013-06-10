@@ -9,13 +9,27 @@ SCRNY	EQU		0x0004			; y分辨率
 VRAM	EQU		0x0008			; 界面地址
 MEMSIZE EQU		0x000c			;扩展内存大小
 VBEMODE EQU		0x105
-[bits 16]		
+[bits 16]
+;获得bios自有的英文字符的bitmap
+get_characters:
+		mov ax,0x1130
+		mov bh,6
+		int 0x10 ;es:bp存储着数据
+		mov ax,es
+		mov ds,ax
+		mov ax,0x1000
+		mov es,ax
+		mov ax,0x6000
+		mov di,ax
+		mov si,bp
+		mov cx,256*16/4
+		rep movsd		
 ;我们首先把界面设置为1024*768，大部分机器都支持，如果不支持我们设置为320*200
 		mov ax,INITSEG
 		mov ds, ax
 		mov ax,0x2800
 		mov es,ax;缓存地址
-		mov di,0;检查是否支持vesa
+		mov di,0 ;检查是否支持vesa
 		mov ax,0x4f00
 		int 0x10
 		cmp al,0x4f
@@ -89,8 +103,6 @@ keyboard:
 		MOV		AL,0xdf			; enable A20
 		OUT		0x60,AL
 		CALL	waitkbdout
-		
-		
 
 		lidt    [idt_48 + 512];因为现在ds指向0x9000，我们的加上偏移量512
 		LGDT	[GDTR0 + 512]			; 

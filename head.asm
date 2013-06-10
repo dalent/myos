@@ -5,6 +5,7 @@ global _idt;
 global pg0;
 global _pg_dir
 global setup_paging
+global _characters
 _pg_dir:;0x0000
 startup_32:
 
@@ -23,7 +24,6 @@ testA20:inc eax
 		mov esp, _sys_stack
 		call setup_idt;
 		jmp after_page_tables
-	
 size equ $ - _pg_dir
 ;我们现在只是保存16M的内存，所以4个页表 ，4*1024* 4k=16M就可以了
 ;但是我们的界面模式是1024*768，我在我的机器上测试界面的地址是0xe0000000，所我
@@ -37,11 +37,11 @@ times 0x1000 db 0
 pg2:;0x3000
 times 0x1000 db 0
 pg3:;;
-
 times 0x1000 db 0
 pg4:;我想保存0xe0000000开始的4M的字节这个是vga的地址
 times 0x1000 db 0
-
+_characters: ;0x6000
+times 0x1000 db 0
 
 times 1024 db 0
 setup_idt:
