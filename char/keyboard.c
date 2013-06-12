@@ -31,12 +31,13 @@ void kbd_init()
 {
 	set_intr_gate(IQR_KB, kb_interupt_asm); 
 	//开启pic 1 中断处理
-	IRQ_Clear_mask(1);
+//	IRQ_Clear_mask(1);
 	//向键盘控制器发送命令
 	wait_keyboard();
 	outb_p(KEYCMD_WAITMODE, KB_CMD);
 	wait_keyboard();
 	outb_p(KBC_MODE, KB_DATA);
+//	__asm__ __volatile__("sti"::);
 	
 	
 	
