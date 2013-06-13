@@ -8,9 +8,9 @@
 inline void PIC_sendEOI(unsigned char irq)
 {	
 	if(irq >= 8)
-		outb(SLAVE_PIC_COMMAND, PIC_EOI);
+		outb(PIC_EOI, SLAVE_PIC_COMMAND);
 		
-	outb(MASTER_PIC_COMMAND, PIC_EOI);
+	outb(PIC_EOI, MASTER_PIC_COMMAND);
 }
 
 #define ICW1_ICW4        0x01   // ICW4(not) needed
@@ -43,8 +43,8 @@ void PIC_remap(int offset1, int offset2)
 	
 	outb_p( ICW4_8086, MASTER_PIC_DATA);
 	outb_p(ICW4_8086, SLAVE_PIC_DATA);
-	outb( 0x0, MASTER_PIC_DATA);
-	outb(0x0, SLAVE_PIC_DATA);
+	outb(a1, MASTER_PIC_DATA);
+	outb(a2, SLAVE_PIC_DATA);
 }
 //禁用某个中断
 void IRQ_Set_mask(unsigned char IRQline)
@@ -60,7 +60,7 @@ void IRQ_Set_mask(unsigned char IRQline)
 	}
 	
 	value = inb(port) | (1 << IRQline);
-	outb(port, value);
+	outb(value, port);
 }
 
 //开启某个中断
@@ -76,8 +76,8 @@ void IRQ_Clear_mask(unsigned char IRQline)
 		IRQline -= 8;
 	}
 	
-	value = inb(port) | ~(1 << IRQline);
-	outb(port, value);
+	value = inb(port) & ~(1 << IRQline);
+	outb(value, port);
 }
 
 void init_pic()

@@ -12,127 +12,128 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x00000000     0x926c
+.text           0x00000000     0xa2cc
                 0x00000000                code = .
  *(.text)
- .text          0x00000000     0x7cd8 head.o
+ .text          0x00000000     0x8cd8 head.o
                 0x00000000                _pg_dir
                 0x00001000                pg0
-                0x00006448                setup_paging
-                0x000064d8                _idt
- *fill*         0x00007cd8        0x8 
- .text          0x00007ce0      0x270 m.o
-                0x00007e48                _main
- .text          0x00007f50      0x110 me.o
-                0x00007f50                _mem_init
-                0x00007fc3                _get_free_page
-                0x00007ffc                _free_page
- .text          0x00008060       0xd0 asm.o
-                0x00008060                _divide_error
-                0x00008094                _debug
-                0x0000809b                _nmi
-                0x000080a2                _int3
-                0x000080a9                _overflow
-                0x000080b0                _bounds
-                0x000080b7                _invalid_op
-                0x000080be                _coprocessor_segment_overrun
-                0x000080c5                _reserved
-                0x000080cc                _irq13
-                0x000080de                _double_fault
-                0x00008113                _invalid_TSS
-                0x0000811a                _segment_not_present
-                0x00008121                _stack_segment
-                0x00008128                _general_protection
- .text          0x00008130      0x500 t.o
-                0x0000813e                _do_double_fault
-                0x00008174                _do_general_protection
-                0x000081a4                _do_divide_error
-                0x000081c7                _do_int3
-                0x000081cc                _do_nmi
-                0x000081f5                _do_debug
-                0x00008218                _do_overflow
-                0x00008242                _do_bounds
-                0x00008275                _do_invalid_op
-                0x000082ae                _do_device_not_available
-                0x000082ed                _do_coprocessor_segment_overrun
-                0x0000831c                _do_invalid_TSS
-                0x00008353                _do_segment_not_present
-                0x00008384                _do_stack_segment
-                0x000083b9                _do_coprocessor_rror
-                0x000083e5                _do_reserved
-                0x00008408                _trap_init
- .text          0x00008630      0x340 malloc.o
-                0x0000868f                _malloc
-                0x000087ff                _free_s
- .text          0x00008970      0x5f0 graphics.o
-                0x00008970                _fill_rectangle
-                0x000089cc                _draw_char8
-                0x00008b40                _draw_char
-                0x00008b8d                _init_screen
- .text          0x00008f60      0x1f0 pic.o
-                0x00008f60                _PIC_sendEOI
-                0x00008f8a                _PIC_remap
-                0x00009051                _IRQ_Set_mask
-                0x000090bb                _IRQ_Clear_mask
-                0x00009127                _init_pic
- .text          0x00009150        0x0 hankaku.obj
- .text          0x00009150      0x100 keyboard.o
-                0x0000917e                _kbd_init
-                0x000091da                _do_kb_interupt
- .text          0x00009250       0x1c kb.o
-                0x00009250                _kb_interupt_asm
-                0x0000926c                data = .
+                0x00006000                _characters
+                0x00007448                setup_paging
+                0x000074d8                _idt
+ *fill*         0x00008cd8        0x8 
+ .text          0x00008ce0      0x270 m.o
+                0x00008e48                _main
+ .text          0x00008f50      0x110 me.o
+                0x00008f50                _mem_init
+                0x00008fc3                _get_free_page
+                0x00008ffc                _free_page
+ .text          0x00009060       0xd0 asm.o
+                0x00009060                _divide_error
+                0x00009094                _debug
+                0x0000909b                _nmi
+                0x000090a2                _int3
+                0x000090a9                _overflow
+                0x000090b0                _bounds
+                0x000090b7                _invalid_op
+                0x000090be                _coprocessor_segment_overrun
+                0x000090c5                _reserved
+                0x000090cc                _irq13
+                0x000090de                _double_fault
+                0x00009113                _invalid_TSS
+                0x0000911a                _segment_not_present
+                0x00009121                _stack_segment
+                0x00009128                _general_protection
+ .text          0x00009130      0x500 t.o
+                0x0000913e                _do_double_fault
+                0x00009174                _do_general_protection
+                0x000091a4                _do_divide_error
+                0x000091c7                _do_int3
+                0x000091cc                _do_nmi
+                0x000091f5                _do_debug
+                0x00009218                _do_overflow
+                0x00009242                _do_bounds
+                0x00009275                _do_invalid_op
+                0x000092ae                _do_device_not_available
+                0x000092ed                _do_coprocessor_segment_overrun
+                0x0000931c                _do_invalid_TSS
+                0x00009353                _do_segment_not_present
+                0x00009384                _do_stack_segment
+                0x000093b9                _do_coprocessor_rror
+                0x000093e5                _do_reserved
+                0x00009408                _trap_init
+ .text          0x00009630      0x340 malloc.o
+                0x0000968f                _malloc
+                0x000097ff                _free_s
+ .text          0x00009970      0x660 graphics.o
+                0x00009970                _fill_rectangle
+                0x000099cc                _draw_char8
+                0x00009b4b                _draw_char
+                0x00009b98                _init_screen
+ .text          0x00009fd0      0x1e0 pic.o
+                0x00009fd0                _PIC_sendEOI
+                0x00009ffa                _PIC_remap
+                0x0000a0bf                _IRQ_Set_mask
+                0x0000a129                _IRQ_Clear_mask
+                0x0000a195                _init_pic
+ .text          0x0000a1b0        0x0 hankaku.obj
+ .text          0x0000a1b0      0x100 keyboard.o
+                0x0000a1de                _kbd_init
+                0x0000a23b                _do_kb_interupt
+ .text          0x0000a2b0       0x1c kb.o
+                0x0000a2b0                _kb_interupt_asm
+                0x0000a2cc                data = .
 
-.data           0x00009270     0x24c8 load address 0x0000926c
+.data           0x0000a2d0     0x24c8 load address 0x0000a2cc
  *(.rodata)
  *(.data)
- .data          0x00009270        0x0 head.o
- .data          0x00009270        0x0 m.o
- .data          0x00009270        0x0 me.o
- .data          0x00009270        0x0 asm.o
- .data          0x00009270        0x0 t.o
- .data          0x00009270       0x50 malloc.o
-                0x00009270                _bucket_dir
- .data          0x000092c0        0x0 graphics.o
- .data          0x000092c0        0x0 pic.o
- .data          0x000092c0     0x1000 hankaku.obj
-                0x000092c0                _hankaku
- .data          0x0000a2c0        0x0 keyboard.o
- .data          0x0000a2c0        0x0 kb.o
+ .data          0x0000a2d0        0x0 head.o
+ .data          0x0000a2d0        0x0 m.o
+ .data          0x0000a2d0        0x0 me.o
+ .data          0x0000a2d0        0x0 asm.o
+ .data          0x0000a2d0        0x0 t.o
+ .data          0x0000a2d0       0x50 malloc.o
+                0x0000a2d0                _bucket_dir
+ .data          0x0000a320        0x0 graphics.o
+ .data          0x0000a320        0x0 pic.o
+ .data          0x0000a320     0x1000 hankaku.obj
+                0x0000a320                _hankaku
+ .data          0x0000b320        0x0 keyboard.o
+ .data          0x0000b320        0x0 kb.o
  *(.bss)
- .bss           0x0000a2c0        0x0 head.o
- .bss           0x0000a2c0        0xc m.o
-                0x0000a2c0                _memory_end
-                0x0000a2c4                _buffer_memory_end
-                0x0000a2c8                _main_memory_start
- .bss           0x0000a2cc      0xf10 me.o
-                0x0000a2cc                _HIGH_MEMORY
-                0x0000a2dc                _mem_map
- *fill*         0x0000b1dc        0x4 
- .bss           0x0000b1e0        0x0 asm.o
- .bss           0x0000b1e0        0x0 t.o
- .bss           0x0000b1e0        0x4 malloc.o
-                0x0000b1e0                _free_bucket_desc
- .bss           0x0000b1e4        0x0 graphics.o
- .bss           0x0000b1e4        0x0 pic.o
- .bss           0x0000b1e4        0x0 hankaku.obj
- .bss           0x0000b1e4        0x0 keyboard.o
- .bss           0x0000b1e4        0x0 kb.o
+ .bss           0x0000b320        0x0 head.o
+ .bss           0x0000b320        0xc m.o
+                0x0000b320                _memory_end
+                0x0000b324                _buffer_memory_end
+                0x0000b328                _main_memory_start
+ .bss           0x0000b32c      0xf10 me.o
+                0x0000b32c                _HIGH_MEMORY
+                0x0000b33c                _mem_map
+ *fill*         0x0000c23c        0x4 
+ .bss           0x0000c240        0x0 asm.o
+ .bss           0x0000c240        0x0 t.o
+ .bss           0x0000c240        0x4 malloc.o
+                0x0000c240                _free_bucket_desc
+ .bss           0x0000c244        0x0 graphics.o
+ .bss           0x0000c244        0x0 pic.o
+ .bss           0x0000c244        0x0 hankaku.obj
+ .bss           0x0000c244        0x0 keyboard.o
+ .bss           0x0000c244        0x0 kb.o
  *(.*)
- .comment       0x0000b1e4       0x14 m.o
- .eh_frame      0x0000b1f8       0x58 m.o
- .comment       0x0000b250       0x14 me.o
- .eh_frame      0x0000b264       0x70 me.o
- .comment       0x0000b2d4       0x14 t.o
- .eh_frame      0x0000b2e8      0x1cc t.o
- .comment       0x0000b4b4       0x14 malloc.o
- .eh_frame      0x0000b4c8       0x68 malloc.o
- .comment       0x0000b530       0x14 graphics.o
- .eh_frame      0x0000b544       0x88 graphics.o
- .comment       0x0000b5cc       0x14 pic.o
- .eh_frame      0x0000b5e0       0xc4 pic.o
- .comment       0x0000b6a4       0x14 keyboard.o
- .eh_frame      0x0000b6b8       0x80 keyboard.o
+ .comment       0x0000c244       0x14 m.o
+ .eh_frame      0x0000c258       0x58 m.o
+ .comment       0x0000c2b0       0x14 me.o
+ .eh_frame      0x0000c2c4       0x70 me.o
+ .comment       0x0000c334       0x14 t.o
+ .eh_frame      0x0000c348      0x1cc t.o
+ .comment       0x0000c514       0x14 malloc.o
+ .eh_frame      0x0000c528       0x68 malloc.o
+ .comment       0x0000c590       0x14 graphics.o
+ .eh_frame      0x0000c5a4       0x88 graphics.o
+ .comment       0x0000c62c       0x14 pic.o
+ .eh_frame      0x0000c640       0xc4 pic.o
+ .comment       0x0000c704       0x14 keyboard.o
+ .eh_frame      0x0000c718       0x80 keyboard.o
 LOAD head.o
 LOAD m.o
 LOAD me.o
@@ -146,6 +147,6 @@ LOAD keyboard.o
 LOAD kb.o
 OUTPUT(kernel binary)
 
-.bss            0x0000b738       0x10 load address 0x0000b734
- COMMON         0x0000b738       0x10 m.o
-                0x0000b738                _boot_info
+.bss            0x0000c798       0x10 load address 0x0000c794
+ COMMON         0x0000c798       0x10 m.o
+                0x0000c798                _boot_info
