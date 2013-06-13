@@ -4,7 +4,8 @@ set mylib=.\..\lib
 set idt=.\..\idt
 set vga=.\..\graphics
 set char=.\..\char
-copy .\hankaku.obj %bin_path%\
+set std=.\..\std
+
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
 cd %mm%
@@ -27,12 +28,19 @@ gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc 
 copy *.o .\..\%bin_path%\ 
 del *.o
 
+
+
 cd %char%
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o keyboard.o keyboard.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o mouse.o mouse.c
 nasm -f aout -o kb.o kb.asm
 copy *.o .\..\%bin_path%\ 
 del *.o
 
+cd %std%
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o fifo.o fifo.c
+copy *.o .\..\%bin_path%\ 
+del *.o
 
 cd ..\%bin_path%
 del /Q *.bin
@@ -41,7 +49,7 @@ nasm -o bootloader.bin ..\bootloader.asm
 nasm -o setup.bin ..\setup.asm
 nasm  -f aout -o head.o ..\head.asm
 nasm  -f aout -o asm.o ..\asm.asm
-set object=head.o m.o me.o asm.o t.o malloc.o graphics.o pic.o hankaku.obj keyboard.o kb.o
+set object=head.o m.o me.o asm.o t.o malloc.o graphics.o pic.o keyboard.o kb.o fifo.o mouse.o
 ld -T ..\link.ld -Map map.txt -o kernel %object%
 del /Q *.o
 
