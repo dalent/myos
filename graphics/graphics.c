@@ -13,8 +13,8 @@ void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx,
 void copy_rectangle(char *vram, int xsize, int srcx, int srcy, int width, int height, char *block)
 {
 	int x, y;
-	for(y = srcy; y <= srcy + height; y++)
-		for(x = srcx; x <= srcx + width; x++)
+	for(y = srcy; y < srcy + height; y++)
+		for(x = srcx; x < srcx + width; x++)
 			vram[y * xsize + x] = block[(y - srcy) * width + (x - srcx)];
 }
 

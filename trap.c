@@ -211,7 +211,6 @@ void trap_init()
 	set_trap_gate(45, &irq13);//Ğ­´¦ÀíÆ÷
 	//outb_p(inb_p(0x21)&0xfb, 0x21);
 	//outb(inb_p(0xA1)&0xdf,0xA1);
-	sti();
 	//j = 1/0;
 	return ;
 }

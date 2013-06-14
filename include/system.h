@@ -1,5 +1,7 @@
 //该文件定义了设置或修改描述符/中断门等的嵌入式汇编宏
 #define sti() __asm__("sti"::);
+#define stihlt() __asm__("sti\n" \
+		"hlt"::);
 #define cli() __asm__("cli"::);
 #define nop() __asm__("nop"::);
 #define iret() __asm__("iret"::);
@@ -28,7 +30,8 @@ Possible IDT gate types :
 		::"i"((short)(0x8000+(dpl<<13) + (type<<8))),\
 		"o"(*(char*)(gate_addr)),\
 		"o"(*(4 + (char*)(gate_addr))),\
-		"d"((char*)(addr)),"a"(0x80000))
+		"d"((char*)(addr)),"a"(0x80000)\
+		:"3","4")
 //中描述符的类型是15 特权级0		
 #define set_trap_gate(n, addr) \
 		_set_gate(&idt[n], 15,0,addr);

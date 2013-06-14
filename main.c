@@ -18,13 +18,15 @@ struct BOOT_INFO
 	unsigned long ext_mem_k;
 };
 extern void mem_init(long start, long end);
-void init_screen(char *vram, int xsize, int ysize);
-void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s);
+extern void init_screen(char *vram, int xsize, int ysize);
+extern void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s);
 extern void trap_init();
-extern void kbd_init(struct FIFO * fifo) ;
-void init_mouse(struct FIFO * fifo, int data0);
-void copy_rectangle(char *vram, int xsize, int srcx, int srcy, int width, int height, char *block);
-void init_mouse_cursor8(char *mouse, char bc);
+extern void init_keyboard(struct FIFO * fifo) ;
+extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
+extern void init_mouse(struct FIFO * fifo, int data0);
+extern void copy_rectangle(char *vram, int xsize, int srcx, int srcy, int width, int height, char *block);
+extern void init_mouse_cursor8(char *mouse, char bc);
+extern void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty);
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
@@ -50,6 +52,7 @@ struct FIFO fifo;
 void main()
 {
 	int buf[128];
+	char mousebuf[256];
 	unsigned char kbdus[128] =
 	{
 		0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
@@ -91,35 +94,48 @@ void main()
 	};
 	
 	struct MOUSE_DEC mdec = {0};
-	
+	int mx,my;
 	fifo_init(&fifo, buf, 128);
-	init_device();
-	
-	
+	init_device();	
+	init_mouse_cursor8(mousebuf, VGA_BLUE);
+	mx = (boot_info.scrnx - 16) / 2;
+	my = (boot_info.scrny - 28 - 16) / 2;
+	copy_rectangle(boot_info.vram, boot_info.scrnx, mx, my, 16, 16, mousebuf);
+	sti();
 	for(;;)
 	{
+		cli();
 		if(fifo_status(&fifo) <= 0)
 		{	
-			hlt();
+		//sti();
+			stihlt();
 		}else 
 		{
 			int data;
-			cli();
+			
 			data = fifo_get(&fifo);
 			sti();
 			if(data <= 256)
 				draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
-			else
+			else if(data <= 512)
 			{
 				
-						char mousebuf[256];
-						init_mouse_cursor8(mousebuf, VGA_WHITE);
-						copy_rectangle(boot_info.vram, boot_info.scrnx, 100, 100, 16, 16, mousebuf);
+				if(mousedecode(&mdec, data - 256))	
+				{
+					fill_rectangle(boot_info.vram, boot_info.scrnx, VGA_BLUE, mx, my, mx + 15, my + 15);
+					mx += mdec.x;
+					my += mdec.y;
+					mx = (mx >= 0 ? ((mx <= boot_info.scrnx - 16) ? mx:boot_info.scrnx - 16) : 0);
+					my = (my >= 0 ? ((my <= boot_info.scrny - 16) ? my:boot_info.scrny - 16) : 0);
+					copy_rectangle(boot_info.vram, boot_info.scrnx, mx, my, 16, 16, mousebuf);	
+				}				
+				
 					
 			
 				
 			}
 		}
+		
 	}
 	//__asm__ __volatile__("hlt");
 }
@@ -145,6 +161,6 @@ void init_device()
 	init_screen(boot_info.vram, boot_info.scrnx, boot_info.scrny);
 	init_pic();
 	//time_init();
-	kbd_init(&fifo);
+	init_keyboard(&fifo);
 	init_mouse(&fifo, 256);
 }

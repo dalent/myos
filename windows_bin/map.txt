@@ -16,7 +16,7 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x00000000     0xaae0
+.text           0x00000000     0xac90
                 0x00000000                code = .
  *(.text)
  .text          0x00000000     0x8cd8 head.o
@@ -26,137 +26,137 @@ Linker script and memory map
                 0x00007448                setup_paging
                 0x000074d8                _idt
  *fill*         0x00008cd8        0x8 
- .text          0x00008ce0      0x590 m.o
+ .text          0x00008ce0      0x660 m.o
                 0x00008e48                _main
-                0x00009156                _init_device
- .text          0x00009270      0x110 me.o
-                0x00009270                _mem_init
-                0x000092e3                _get_free_page
-                0x0000931c                _free_page
- .text          0x00009380       0xd0 asm.o
-                0x00009380                _divide_error
-                0x000093b4                _debug
-                0x000093bb                _nmi
-                0x000093c2                _int3
-                0x000093c9                _overflow
-                0x000093d0                _bounds
-                0x000093d7                _invalid_op
-                0x000093de                _coprocessor_segment_overrun
-                0x000093e5                _reserved
-                0x000093ec                _irq13
-                0x000093fe                _double_fault
-                0x00009433                _invalid_TSS
-                0x0000943a                _segment_not_present
-                0x00009441                _stack_segment
-                0x00009448                _general_protection
- .text          0x00009450      0x500 t.o
-                0x0000945e                _do_double_fault
-                0x00009494                _do_general_protection
-                0x000094c4                _do_divide_error
-                0x000094e7                _do_int3
-                0x000094ec                _do_nmi
-                0x00009515                _do_debug
-                0x00009538                _do_overflow
-                0x00009562                _do_bounds
-                0x00009595                _do_invalid_op
-                0x000095ce                _do_device_not_available
-                0x0000960d                _do_coprocessor_segment_overrun
-                0x0000963c                _do_invalid_TSS
-                0x00009673                _do_segment_not_present
-                0x000096a4                _do_stack_segment
-                0x000096d9                _do_coprocessor_rror
-                0x00009705                _do_reserved
-                0x00009728                _trap_init
- .text          0x00009950      0x340 malloc.o
-                0x000099af                _malloc
-                0x00009b1f                _free_s
- .text          0x00009c90      0x7e0 graphics.o
-                0x00009c90                _fill_rectangle
-                0x00009cec                _copy_rectangle
-                0x00009d7b                _draw_char8
-                0x00009efa                _draw_char
-                0x00009f47                _init_mouse_cursor8
-                0x0000a0a4                _init_screen
- .text          0x0000a470      0x1f0 pic.o
-                0x0000a470                _PIC_sendEOI
-                0x0000a49a                _PIC_remap
-                0x0000a561                _IRQ_Set_mask
-                0x0000a5cb                _IRQ_Clear_mask
-                0x0000a637                _init_pic
- .text          0x0000a660       0xf0 keyboard.o
-                0x0000a660                _kbd_init
-                0x0000a701                _do_kb_interupt
- .text          0x0000a750       0x38 kb.o
-                0x0000a750                _kb_interupt_asm
-                0x0000a76b                _mouse_interupt_asm
- *fill*         0x0000a788        0x8 
- .text          0x0000a790      0x130 fifo.o
-                0x0000a790                _fifo_init
-                0x0000a7c7                _fifo_put
-                0x0000a835                _fifo_get
-                0x0000a8aa                _fifo_status
- .text          0x0000a8c0      0x220 mouse.o
-                0x0000a8c0                _init_mouse
-                0x0000a932                _do_mouse_interupt
-                0x0000a984                _mousedecode
-                0x0000aae0                data = .
+                0x0000922d                _init_device
+ .text          0x00009340      0x110 me.o
+                0x00009340                _mem_init
+                0x000093b3                _get_free_page
+                0x000093ec                _free_page
+ .text          0x00009450       0xd0 asm.o
+                0x00009450                _divide_error
+                0x00009484                _debug
+                0x0000948b                _nmi
+                0x00009492                _int3
+                0x00009499                _overflow
+                0x000094a0                _bounds
+                0x000094a7                _invalid_op
+                0x000094ae                _coprocessor_segment_overrun
+                0x000094b5                _reserved
+                0x000094bc                _irq13
+                0x000094ce                _double_fault
+                0x00009503                _invalid_TSS
+                0x0000950a                _segment_not_present
+                0x00009511                _stack_segment
+                0x00009518                _general_protection
+ .text          0x00009520      0x500 t.o
+                0x0000952e                _do_double_fault
+                0x00009564                _do_general_protection
+                0x00009594                _do_divide_error
+                0x000095b7                _do_int3
+                0x000095bc                _do_nmi
+                0x000095e5                _do_debug
+                0x00009608                _do_overflow
+                0x00009632                _do_bounds
+                0x00009665                _do_invalid_op
+                0x0000969e                _do_device_not_available
+                0x000096dd                _do_coprocessor_segment_overrun
+                0x0000970c                _do_invalid_TSS
+                0x00009743                _do_segment_not_present
+                0x00009774                _do_stack_segment
+                0x000097a9                _do_coprocessor_rror
+                0x000097d5                _do_reserved
+                0x000097f8                _trap_init
+ .text          0x00009a20      0x340 malloc.o
+                0x00009a7f                _malloc
+                0x00009bef                _free_s
+ .text          0x00009d60      0x7e0 graphics.o
+                0x00009d60                _fill_rectangle
+                0x00009dbc                _copy_rectangle
+                0x00009e4b                _draw_char8
+                0x00009fca                _draw_char
+                0x0000a017                _init_mouse_cursor8
+                0x0000a174                _init_screen
+ .text          0x0000a540      0x1e0 pic.o
+                0x0000a540                _PIC_sendEOI
+                0x0000a56a                _PIC_remap
+                0x0000a62f                _IRQ_Set_mask
+                0x0000a699                _IRQ_Clear_mask
+                0x0000a705                _init_pic
+ .text          0x0000a720      0x170 keyboard.o
+                0x0000a720                _init_keyboard
+                0x0000a83e                _do_kb_interupt
+ .text          0x0000a890       0x38 kb.o
+                0x0000a890                _kb_interupt_asm
+                0x0000a8ab                _mouse_interupt_asm
+ *fill*         0x0000a8c8        0x8 
+ .text          0x0000a8d0      0x130 fifo.o
+                0x0000a8d0                _fifo_init
+                0x0000a907                _fifo_put
+                0x0000a975                _fifo_get
+                0x0000a9ea                _fifo_status
+ .text          0x0000aa00      0x290 mouse.o
+                0x0000aa00                _init_mouse
+                0x0000aadd                _do_mouse_interupt
+                0x0000ab2f                _mousedecode
+                0x0000ac90                data = .
 
-.data           0x0000aae0     0x1740
+.data           0x0000ac90     0x1770
  *(.rodata)
  *(.data)
- .data          0x0000aae0        0x0 head.o
- .data          0x0000aae0        0x0 m.o
- .data          0x0000aae0        0x0 me.o
- .data          0x0000aae0        0x0 asm.o
- .data          0x0000aae0        0x0 t.o
- .data          0x0000aae0       0x50 malloc.o
-                0x0000aae0                _bucket_dir
- .data          0x0000ab30      0x100 graphics.o
- .data          0x0000ac30        0x0 pic.o
- .data          0x0000ac30        0x0 keyboard.o
- .data          0x0000ac30        0x0 kb.o
- .data          0x0000ac30        0x0 fifo.o
- .data          0x0000ac30        0x0 mouse.o
+ .data          0x0000ac90        0x0 head.o
+ .data          0x0000ac90        0x0 m.o
+ .data          0x0000ac90        0x0 me.o
+ .data          0x0000ac90        0x0 asm.o
+ .data          0x0000ac90        0x0 t.o
+ .data          0x0000ac90       0x50 malloc.o
+                0x0000ac90                _bucket_dir
+ .data          0x0000ace0      0x100 graphics.o
+ .data          0x0000ade0        0x0 pic.o
+ .data          0x0000ade0        0x0 keyboard.o
+ .data          0x0000ade0        0x0 kb.o
+ .data          0x0000ade0        0x0 fifo.o
+ .data          0x0000ade0        0x0 mouse.o
  *(.bss)
- .bss           0x0000ac30        0x0 head.o
- .bss           0x0000ac30        0xc m.o
-                0x0000ac30                _memory_end
-                0x0000ac34                _buffer_memory_end
-                0x0000ac38                _main_memory_start
- .bss           0x0000ac3c      0xf10 me.o
-                0x0000ac3c                _HIGH_MEMORY
-                0x0000ac4c                _mem_map
- *fill*         0x0000bb4c        0x4 
- .bss           0x0000bb50        0x0 asm.o
- .bss           0x0000bb50        0x0 t.o
- .bss           0x0000bb50        0x4 malloc.o
-                0x0000bb50                _free_bucket_desc
- .bss           0x0000bb54        0x0 graphics.o
- .bss           0x0000bb54        0x0 pic.o
- .bss           0x0000bb54        0x0 keyboard.o
- *fill*         0x0000bb54        0x4 
- .bss           0x0000bb58        0x0 kb.o
- .bss           0x0000bb58        0x0 fifo.o
- .bss           0x0000bb58        0x0 mouse.o
+ .bss           0x0000ade0        0x0 head.o
+ .bss           0x0000ade0        0xc m.o
+                0x0000ade0                _memory_end
+                0x0000ade4                _buffer_memory_end
+                0x0000ade8                _main_memory_start
+ .bss           0x0000adec      0xf10 me.o
+                0x0000adec                _HIGH_MEMORY
+                0x0000adfc                _mem_map
+ *fill*         0x0000bcfc        0x4 
+ .bss           0x0000bd00        0x0 asm.o
+ .bss           0x0000bd00        0x0 t.o
+ .bss           0x0000bd00        0x4 malloc.o
+                0x0000bd00                _free_bucket_desc
+ .bss           0x0000bd04        0x0 graphics.o
+ .bss           0x0000bd04        0x0 pic.o
+ .bss           0x0000bd04        0x0 keyboard.o
+ *fill*         0x0000bd04        0x4 
+ .bss           0x0000bd08        0x0 kb.o
+ .bss           0x0000bd08        0x0 fifo.o
+ .bss           0x0000bd08        0x0 mouse.o
  *(.*)
- .comment       0x0000bb58       0x14 m.o
- .eh_frame      0x0000bb6c       0x78 m.o
- .comment       0x0000bbe4       0x14 me.o
- .eh_frame      0x0000bbf8       0x70 me.o
- .comment       0x0000bc68       0x14 t.o
- .eh_frame      0x0000bc7c      0x1cc t.o
- .comment       0x0000be48       0x14 malloc.o
- .eh_frame      0x0000be5c       0x68 malloc.o
- .comment       0x0000bec4       0x14 graphics.o
- .eh_frame      0x0000bed8       0xec graphics.o
- .comment       0x0000bfc4       0x14 pic.o
- .eh_frame      0x0000bfd8       0xc4 pic.o
- .comment       0x0000c09c       0x14 keyboard.o
- .eh_frame      0x0000c0b0       0x60 keyboard.o
- .comment       0x0000c110       0x14 fifo.o
- .eh_frame      0x0000c124       0x6c fifo.o
- .comment       0x0000c190       0x14 mouse.o
- .eh_frame      0x0000c1a4       0x7c mouse.o
+ .comment       0x0000bd08       0x14 m.o
+ .eh_frame      0x0000bd1c       0x78 m.o
+ .comment       0x0000bd94       0x14 me.o
+ .eh_frame      0x0000bda8       0x70 me.o
+ .comment       0x0000be18       0x14 t.o
+ .eh_frame      0x0000be2c      0x1dc t.o
+ .comment       0x0000c008       0x14 malloc.o
+ .eh_frame      0x0000c01c       0x68 malloc.o
+ .comment       0x0000c084       0x14 graphics.o
+ .eh_frame      0x0000c098       0xec graphics.o
+ .comment       0x0000c184       0x14 pic.o
+ .eh_frame      0x0000c198       0xc4 pic.o
+ .comment       0x0000c25c       0x14 keyboard.o
+ .eh_frame      0x0000c270       0x70 keyboard.o
+ .comment       0x0000c2e0       0x14 fifo.o
+ .eh_frame      0x0000c2f4       0x6c fifo.o
+ .comment       0x0000c360       0x14 mouse.o
+ .eh_frame      0x0000c374       0x8c mouse.o
 LOAD head.o
 LOAD m.o
 LOAD me.o
@@ -171,12 +171,12 @@ LOAD fifo.o
 LOAD mouse.o
 OUTPUT(kernel binary)
 
-.bss            0x0000c220       0x60
- COMMON         0x0000c220       0x30 m.o
-                0x0000c220                _boot_info
-                0x0000c230                _fifo
- COMMON         0x0000c250       0x10 keyboard.o
-                0x0000c250                _kbFIFO
- COMMON         0x0000c260       0x20 mouse.o
-                0x0000c260                _mousefifo
-                0x0000c270                _offset
+.bss            0x0000c400       0x60
+ COMMON         0x0000c400       0x30 m.o
+                0x0000c400                _boot_info
+                0x0000c410                _fifo
+ COMMON         0x0000c430       0x10 keyboard.o
+                0x0000c430                _kbFIFO
+ COMMON         0x0000c440       0x20 mouse.o
+                0x0000c440                _mousefifo
+                0x0000c450                _offset
