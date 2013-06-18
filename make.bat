@@ -5,6 +5,7 @@ set idt=.\..\idt
 set vga=.\..\graphics
 set char=.\..\char
 set std=.\..\std
+set object=head.o m.o me.o asm.o t.o m2.o g.o pic.o k1.o kb.o fifo.o m1.o c.o v.o s.o
 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
@@ -14,12 +15,15 @@ copy *.o .\..\%bin_path%\
 del *.o
 
 cd %mylib%
-gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o malloc.o malloc.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o m2.o malloc.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o c.o ctype.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o v.o vsprintf.c
 copy *.o .\..\%bin_path%\ 
 del *.o
 
 cd %vga%
-gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o graphics.o graphics.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o g.o graphics.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o s.o sheet.c
 copy *.o .\..\%bin_path%\ 
 del *.o
 
@@ -31,8 +35,8 @@ del *.o
 
 
 cd %char%
-gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o keyboard.o keyboard.c
-gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o mouse.o mouse.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o k1.o keyboard.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o m1.o mouse.c
 nasm -f aout -o kb.o kb.asm
 copy *.o .\..\%bin_path%\ 
 del *.o
@@ -49,7 +53,7 @@ nasm -o bootloader.bin ..\bootloader.asm
 nasm -o setup.bin ..\setup.asm
 nasm  -f aout -o head.o ..\head.asm
 nasm  -f aout -o asm.o ..\asm.asm
-set object=head.o m.o me.o asm.o t.o malloc.o graphics.o pic.o keyboard.o kb.o fifo.o mouse.o
+
 ld -T ..\link.ld -Map map.txt -o kernel %object%
 del /Q *.o
 

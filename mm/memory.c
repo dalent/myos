@@ -1,6 +1,7 @@
 #ifndef _MEMORY_C_
 #define _MEMORY_C_
 #include "../include/kernel.h"
+#include "../include/stdlib.h"
 #define invalidate() __asm__("movl %%eax, %%cr3"::"a"(0))   //刷新叶变换高速缓存
 #define LOW_MEM 0x100000									//内存低端
 #define PAGING_MEMORY (15 * 1024 * 1024)                   //分页内存15M

@@ -52,9 +52,11 @@ __res;})
 #define do_stack_segment                    _do_stack_segment
 #define do_reserved                         _do_reserved
 #endif
+extern void printf(const char*fmt, ...);
 static void die(char * str, long esp_ptr, long nr)
 {
-	//for(;;);
+	printf("%s%d", str, esp_ptr);
+	for(;;);
 }
 
 void do_double_fault(long esp, long error_code)

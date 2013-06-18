@@ -10,23 +10,27 @@
 #include "./include/system.h"
 #include "./include/VGA.h"
 #include "./include/char.h"
+#include "./include/sheet.h"
 struct BOOT_INFO
 {
 	char led,vmode;
 	short scrnx,scrny,reserve;
-	char * vram;
+	unsigned char * vram;
 	unsigned long ext_mem_k;
 };
 extern void mem_init(long start, long end);
-extern void init_screen(char *vram, int xsize, int ysize);
-extern void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s);
+extern void init_screen(unsigned char *vram, int xsize, int ysize);
+extern void draw_char8(unsigned char *vram, int xsize, char color, int posx, int posy, char s);
 extern void trap_init();
 extern void init_keyboard(struct FIFO * fifo) ;
 extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
 extern void init_mouse(struct FIFO * fifo, int data0);
-extern void copy_rectangle(char *vram, int xsize, int srcx, int srcy, int width, int height, char *block);
+extern void copy_rectangle(unsigned char *vram, int xsize, int srcx, int srcy, int width, int height, char *block);
 extern void init_mouse_cursor8(char *mouse, char bc);
-extern void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty);
+extern void fill_rectangle(unsigned char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty);
+extern int sprintf(char * buf, const char *fmt, ...);
+extern void draw_string(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
+extern void printf(const char*fmt, ...);
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
@@ -55,6 +59,8 @@ void main()
 	int buf[128];
 	int bufmouse[128];
 	char mousebuf[256];
+	//int x=0,y=0;
+	char  str[20];
 	unsigned char kbdus[128] =
 	{
 		0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
@@ -97,6 +103,7 @@ void main()
 	
 	struct MOUSE_DEC mdec = {0};
 	int mx,my;
+	struct SHTCTL *shtctl;
 	fifo_init(&fifo, buf, 128);
 	fifo_init(&fifomouse, bufmouse, 128);
 	init_device();	
@@ -105,6 +112,12 @@ void main()
 	my = (boot_info.scrny - 28 - 16) / 2;
 	copy_rectangle(boot_info.vram, boot_info.scrnx, mx, my, 16, 16, mousebuf);
 	sti();
+	shtctl = shtctl_init(boot_info.vram, boot_info.scrnx, boot_info.scrny);
+	if(shtctl == 0)
+	{
+		printf("sheet init failed!");
+		for(;;);
+	}
 	for(;;)
 	{
 		cli();
@@ -169,4 +182,17 @@ void init_device()
 	//time_init();
 	init_keyboard(&fifo);
 	init_mouse(&fifomouse, 256);
+	
+}
+#include "./include/stdarg.h"
+extern int vsprintf(char *buf, const char *fmt, va_list args);
+void printf(const char*fmt, ...)
+{
+	char buf[100];
+	va_list args;
+
+	va_start(args, fmt);
+	vsprintf(buf,fmt,args);
+	va_end(args);
+	draw_string(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, buf);
 }

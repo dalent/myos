@@ -2,7 +2,7 @@
 //该函数负责填充一个矩形
 //http://www.brackeen.com/vga/basics.html
 #include "./../include/VGA.h"
-void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty)
+void fill_rectangle(unsigned char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty)
 {
 	int x,y;
 	for(y = srcy; y <= desty; y++)
@@ -10,7 +10,7 @@ void fill_rectangle(char* vram, int xsize, char c, int srcx,int srcy, int destx,
 			vram[y * xsize + x] = c;
 }
 
-void copy_rectangle(char *vram, int xsize, int srcx, int srcy, int width, int height, char *block)
+void copy_rectangle(unsigned char *vram, int xsize, int srcx, int srcy, int width, int height, char *block)
 {
 	int x, y;
 	for(y = srcy; y < srcy + height; y++)
@@ -18,10 +18,10 @@ void copy_rectangle(char *vram, int xsize, int srcx, int srcy, int width, int he
 			vram[y * xsize + x] = block[(y - srcy) * width + (x - srcx)];
 }
 
-void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s)
+void draw_char8(unsigned char *vram, int xsize, char color, int posx, int posy, char s)
 {
 	int i;
-	char *p;
+	unsigned char *p;
 	char *hankaku = (char*)0x6000;
 	char *font = hankaku + s * 16;
 	for(i = 0; i < 16; i++)
@@ -38,13 +38,20 @@ void draw_char8(char *vram, int xsize, char color, int posx, int posy, char s)
 		if((font[i] & 0x01) != 0) p[7] = color;
 	}
 }
-
-inline void draw_char(char *vram, int xsize, char color, int posx, int posy, char s)
+inline void draw_string(unsigned char* vram, int xsize, char color, int posx, int posy, char*str)
+{
+	for(;*str!=0;str++)
+	{
+		draw_char8(vram,xsize ,color,posx,posy , *str);
+		posx +=8;
+	}
+}
+inline void draw_char(unsigned char *vram, int xsize, char color, int posx, int posy, char s)
 {
 	draw_char8(vram,xsize ,color,posx,posy , s);
 }
 
-void init_mouse_cursor8(char *mouse, char bc)
+void init_mouse_cursor8(unsigned char *mouse, char bc)
 {
 	char cursor[16][16] = {
 		"**************..",
@@ -82,7 +89,7 @@ void init_mouse_cursor8(char *mouse, char bc)
 	return;
 }
 
-void init_screen(char *vram, int xsize, int ysize)
+void init_screen(unsigned char *vram, int xsize, int ysize)
 {
 	fill_rectangle(vram, xsize, VGA_BLUE, 0, 0, xsize - 1, ysize - 29);//上层蓝色
 	fill_rectangle(vram, xsize, VGA_LIGHT_GRAY, 0, ysize - 28, xsize - 1, ysize - 28);//暗灰色

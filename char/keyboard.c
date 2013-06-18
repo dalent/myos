@@ -33,12 +33,14 @@ void init_keyboard(struct FIFO * fifo)
 	//向键盘控制器发送命令
 	 wait_keyboard();
 	 //outb_p(KEYCMD_WRITEMODE, KB_CMD);//模式设定
+	 // wait_keyboard();
+	 // outb_p(KBC_MODE, KB_DATA);//利用鼠标模式
 	 outb_p(kEYCMD_READMODE, KB_CMD);//读取控制状态位命令
 	 wait_keyboard();
 	 ch = inb(KB_DATA);//读取
 	 ch |= (1 << 1);//开启int 12号中断的
 	 ch &= (~(1 << 4));//开启键盘控制
-	// outb_p(KBC_MODE, KB_DATA);//利用鼠标模式
+	
 	wait_keyboard();
 	outb_p(KEYCMD_WRITEMODE, KB_CMD);//写控制命令到键盘控制器
 	wait_keyboard();
