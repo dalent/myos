@@ -48,10 +48,12 @@ static void time_init(void)
 }
 void init_device();
 struct FIFO fifo;
+struct FIFO fifomouse;
 
 void main()
 {
 	int buf[128];
+	int bufmouse[128];
 	char mousebuf[256];
 	unsigned char kbdus[128] =
 	{
@@ -96,6 +98,7 @@ void main()
 	struct MOUSE_DEC mdec = {0};
 	int mx,my;
 	fifo_init(&fifo, buf, 128);
+	fifo_init(&fifomouse, bufmouse, 128);
 	init_device();	
 	init_mouse_cursor8(mousebuf, VGA_BLUE);
 	mx = (boot_info.scrnx - 16) / 2;
@@ -105,22 +108,25 @@ void main()
 	for(;;)
 	{
 		cli();
-		if(fifo_status(&fifo) <= 0)
+		if((fifo_status(&fifo) +fifo_status(&fifomouse))  == 0)
 		{	
 		//sti();
 			stihlt();
 		}else 
 		{
 			int data;
-			
-			data = fifo_get(&fifo);
-			sti();
-			if(data <= 256)
-				draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
-			else if(data <= 512)
+			if(fifo_status(&fifo) != 0)
 			{
-				
-				if(mousedecode(&mdec, data - 256))	
+				data = fifo_get(&fifo);
+				sti();
+				if(data <= 256)
+					draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
+			}
+			else if(fifo_status(&fifomouse) != 0)
+			{
+				int data;
+				data = fifo_get(&fifomouse);
+				if(mousedecode(&mdec, data - 256) == 1)	
 				{
 					fill_rectangle(boot_info.vram, boot_info.scrnx, VGA_BLUE, mx, my, mx + 15, my + 15);
 					mx += mdec.x;
@@ -162,5 +168,5 @@ void init_device()
 	init_pic();
 	//time_init();
 	init_keyboard(&fifo);
-	init_mouse(&fifo, 256);
+	init_mouse(&fifomouse, 256);
 }
