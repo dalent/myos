@@ -58,7 +58,7 @@ unsigned long get_free_page()
 			"sall $12,%%ecx\n\t"							//左移12位4K，也就是计算与最低内存的偏移量
 			"addl %2,%%ecx\n\t"							   //加上最低内存也就是对应的线性地址
 			"movl %%ecx,%%edx\n\t"
-			"movl $1024,%%ecx\n\t"
+			"movl $1024,%%ecx\n\t"							//把此块内存初始化为0
 			"leal 4092(%%edx),%%edi\n\t"                 //把eax的值存储到[es:edi]中	
 			"rep;stosl\n\t"
 			"movl %%edx,%%eax\n"					
@@ -69,7 +69,52 @@ unsigned long get_free_page()
 			:"3","4","dx");
 	return __res;//返回空闲页面
 }
-
+unsigned long get_liner_pages(int count)
+{
+	//cli();
+	int i;
+	int j;
+	for(i = PAGING_PAGES - 1; i >=0; i--)
+	{
+		if(mem_map[i] == 0)
+		{
+			for(j = i; j >=0 && j > i - count; j--)
+			{
+				if(mem_map[j] != 0)
+				{
+					i = j;
+					break;
+				}
+			}
+			if(j == i - count)
+			{
+				for(++j;j<=i; j++)
+				{
+					mem_map[j] = 1;
+				}
+				break;
+			}
+		}
+	}
+	//sti();
+	if(i == 0)
+		return 0;
+	return LOW_MEM + ((i - count + 1) << 12);
+	
+}
+void free_liner_pages(unsigned long addr, int count)
+{
+	int i;
+	if(addr < LOW_MEM) return;
+	if(addr + count * 4096 >= HIGH_MEMORY) panic("trying to free noneexistent page!");
+	addr -= LOW_MEM;
+	addr >>= 12;
+	for(i = 0; i< count; i++)
+	{
+		if(mem_map[addr + i]-- < 1)
+			panic("trying to free free page!");
+	}
+}
 void free_page(unsigned long addr)
 {
 	if(addr < LOW_MEM) return;
