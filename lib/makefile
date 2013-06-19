@@ -1,7 +1,7 @@
 cc = gcc
 objs=malloc.o ctype.o vsprintf.o
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
-		-nostdinc -fno-builtin -c 
+		-nostdinc -fno-builtin -fno-stack-protector -c 
 out = lib.a
 .c.o:
 	$(cc) $(CFLAGS) -o $@ $<

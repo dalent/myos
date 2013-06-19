@@ -1,13 +1,12 @@
 cc = gcc
-objs=memory.o
+objs=fifo.o
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-nostdinc -fno-builtin -c 
-out = mm.a
+out = std.a
 .c.o:
 	$(cc) $(CFLAGS) -o $@ $<
 all: $(objs)
-	rm -f  mm.a
-	ar rf mm.a $(objs)
-	ranlib mm.a
+	rm -f  $(out)
+	ar rf $(out) $(objs)
 	rm *.o
-memory.o:memory.c
+fifo.o:fifo.c
