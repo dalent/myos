@@ -18,7 +18,7 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x00000000     0xbc40
+.text           0x00000000     0xc230
                 0x00000000                code = .
  *(.text)
  .text          0x00000000     0x8cd8 head.o
@@ -28,163 +28,168 @@ Linker script and memory map
                 0x00007448                setup_paging
                 0x000074d8                _idt
  *fill*         0x00008cd8        0x8 
- .text          0x00008ce0      0x7a0 m.o
+ .text          0x00008ce0      0x8d0 m.o
                 0x00008e5b                _main
-                0x000092dc                _init_device
-                0x000093ed                _printf
- .text          0x00009480      0x2c0 me.o
-                0x00009480                _mem_init
-                0x000094f3                _get_free_page
-                0x0000952c                _get_liner_pages
-                0x00009638                _free_liner_pages
-                0x000096c7                _free_page
- .text          0x00009740       0xd0 asm.o
-                0x00009740                _divide_error
-                0x00009774                _debug
-                0x0000977b                _nmi
-                0x00009782                _int3
-                0x00009789                _overflow
-                0x00009790                _bounds
-                0x00009797                _invalid_op
-                0x0000979e                _coprocessor_segment_overrun
-                0x000097a5                _reserved
-                0x000097ac                _irq13
-                0x000097be                _double_fault
-                0x000097f3                _invalid_TSS
-                0x000097fa                _segment_not_present
-                0x00009801                _stack_segment
-                0x00009808                _general_protection
- .text          0x00009810      0x530 t.o
-                0x00009843                _do_double_fault
-                0x00009879                _do_general_protection
-                0x000098a9                _do_divide_error
-                0x000098cc                _do_int3
-                0x000098d1                _do_nmi
-                0x000098fa                _do_debug
-                0x0000991d                _do_overflow
-                0x00009947                _do_bounds
-                0x0000997a                _do_invalid_op
-                0x000099b3                _do_device_not_available
-                0x000099f2                _do_coprocessor_segment_overrun
-                0x00009a21                _do_invalid_TSS
-                0x00009a58                _do_segment_not_present
-                0x00009a89                _do_stack_segment
-                0x00009abe                _do_coprocessor_rror
-                0x00009aea                _do_reserved
-                0x00009b0d                _trap_init
- .text          0x00009d40      0x410 m2.o
-                0x00009e02                _malloc
-                0x00009fd4                _free_s
- .text          0x0000a150      0x840 g.o
-                0x0000a150                _fill_rectangle
-                0x0000a1ac                _copy_rectangle
-                0x0000a23b                _draw_char8
-                0x0000a3ba                _draw_string
-                0x0000a418                _draw_char
-                0x0000a465                _init_mouse_cursor8
-                0x0000a5c2                _init_screen
- .text          0x0000a990      0x1e0 pic.o
-                0x0000a990                _PIC_sendEOI
-                0x0000a9ba                _PIC_remap
-                0x0000aa7f                _IRQ_Set_mask
-                0x0000aae9                _IRQ_Clear_mask
-                0x0000ab55                _init_pic
- .text          0x0000ab70      0x170 k1.o
-                0x0000ab70                _init_keyboard
-                0x0000ac8e                _do_kb_interupt
- .text          0x0000ace0       0x38 kb.o
-                0x0000ace0                _kb_interupt_asm
-                0x0000acfb                _mouse_interupt_asm
- *fill*         0x0000ad18        0x8 
- .text          0x0000ad20      0x130 fifo.o
-                0x0000ad20                _fifo_init
-                0x0000ad57                _fifo_put
-                0x0000adc5                _fifo_get
-                0x0000ae3a                _fifo_status
- .text          0x0000ae50      0x290 m1.o
-                0x0000ae50                _init_mouse
-                0x0000af2d                _do_mouse_interupt
-                0x0000af7f                _mousedecode
- .text          0x0000b0e0        0x0 c.o
- .text          0x0000b0e0      0xa40 v.o
-                0x0000b0e0                _strlen
-                0x0000b0ff                _simple_strtoul
-                0x0000b575                _vsprintf
-                0x0000bacc                _sprintf
- .text          0x0000bb20      0x120 s.o
-                0x0000bb20                _shtctl_init
-                0x0000bbb0                _sheet_alloc
-                0x0000bc34                _sheet_free
-                0x0000bc40                data = .
+                0x0000944e                _memory_set
+                0x0000950f                _printf
+ .text          0x000095b0      0x2c0 me.o
+                0x000095b0                _mem_init
+                0x00009623                _get_free_page
+                0x0000965c                _get_liner_pages
+                0x00009768                _free_liner_pages
+                0x000097f7                _free_page
+ .text          0x00009870       0xd0 asm.o
+                0x00009870                _divide_error
+                0x000098a4                _debug
+                0x000098ab                _nmi
+                0x000098b2                _int3
+                0x000098b9                _overflow
+                0x000098c0                _bounds
+                0x000098c7                _invalid_op
+                0x000098ce                _coprocessor_segment_overrun
+                0x000098d5                _reserved
+                0x000098dc                _irq13
+                0x000098ee                _double_fault
+                0x00009923                _invalid_TSS
+                0x0000992a                _segment_not_present
+                0x00009931                _stack_segment
+                0x00009938                _general_protection
+ .text          0x00009940      0x530 t.o
+                0x00009973                _do_double_fault
+                0x000099a9                _do_general_protection
+                0x000099d9                _do_divide_error
+                0x000099fc                _do_int3
+                0x00009a01                _do_nmi
+                0x00009a2a                _do_debug
+                0x00009a4d                _do_overflow
+                0x00009a77                _do_bounds
+                0x00009aaa                _do_invalid_op
+                0x00009ae3                _do_device_not_available
+                0x00009b22                _do_coprocessor_segment_overrun
+                0x00009b51                _do_invalid_TSS
+                0x00009b88                _do_segment_not_present
+                0x00009bb9                _do_stack_segment
+                0x00009bee                _do_coprocessor_rror
+                0x00009c1a                _do_reserved
+                0x00009c3d                _trap_init
+ .text          0x00009e70      0x4e0 m2.o
+                0x00009f4a                _malloc
+                0x0000a160                _free_s
+ .text          0x0000a350      0x8b0 g.o
+                0x0000a350                _fill_rectangle
+                0x0000a3ac                _copy_rectangle
+                0x0000a43b                _draw_char8
+                0x0000a5ba                _draw_string
+                0x0000a618                _draw_string_print
+                0x0000a684                _draw_char
+                0x0000a6d1                _init_mouse_cursor8
+                0x0000a836                _init_screen
+ .text          0x0000ac00      0x1e0 pic.o
+                0x0000ac00                _PIC_sendEOI
+                0x0000ac2a                _PIC_remap
+                0x0000acef                _IRQ_Set_mask
+                0x0000ad59                _IRQ_Clear_mask
+                0x0000adc5                _init_pic
+ .text          0x0000ade0      0x170 k1.o
+                0x0000ade0                _init_keyboard
+                0x0000aefe                _do_kb_interupt
+ .text          0x0000af50       0x38 kb.o
+                0x0000af50                _kb_interupt_asm
+                0x0000af6b                _mouse_interupt_asm
+ *fill*         0x0000af88        0x8 
+ .text          0x0000af90      0x130 fifo.o
+                0x0000af90                _fifo_init
+                0x0000afc7                _fifo_put
+                0x0000b035                _fifo_get
+                0x0000b0aa                _fifo_status
+ .text          0x0000b0c0      0x290 m1.o
+                0x0000b0c0                _init_mouse
+                0x0000b19d                _do_mouse_interupt
+                0x0000b1ef                _mousedecode
+ .text          0x0000b350        0x0 c.o
+ .text          0x0000b350      0xa40 v.o
+                0x0000b350                _strlen
+                0x0000b36f                _simple_strtoul
+                0x0000b7e5                _vsprintf
+                0x0000bd3c                _sprintf
+ .text          0x0000bd90      0x4a0 s.o
+                0x0000bd90                _shtctl_init
+                0x0000be39                _sheet_alloc
+                0x0000bebd                _sheet_setbuf
+                0x0000bee9                _sheet_updown
+                0x0000c0fe                _sheet_refresh
+                0x0000c1f0                _sheet_slide
+                0x0000c224                _sheet_free
+                0x0000c230                data = .
 
-.data           0x0000bc40     0x1a48
+.data           0x0000c230     0x1ad0
  *(.rodata)
  *(.data)
- .data          0x0000bc40        0x0 head.o
- .data          0x0000bc40        0x0 m.o
- .data          0x0000bc40        0x0 me.o
- .data          0x0000bc40        0x0 asm.o
- .data          0x0000bc40        0x0 t.o
- .data          0x0000bc40       0x50 m2.o
-                0x0000bc40                _bucket_dir
- .data          0x0000bc90      0x100 g.o
- .data          0x0000bd90        0x0 pic.o
- .data          0x0000bd90        0x0 k1.o
- .data          0x0000bd90        0x0 kb.o
- .data          0x0000bd90        0x0 fifo.o
- .data          0x0000bd90        0x0 m1.o
- .data          0x0000bd90      0x110 c.o
-                0x0000bd90                __ctype
- .data          0x0000bea0        0x0 v.o
- .data          0x0000bea0        0x0 s.o
+ .data          0x0000c230        0x0 head.o
+ .data          0x0000c230        0x0 m.o
+ .data          0x0000c230        0x0 me.o
+ .data          0x0000c230        0x0 asm.o
+ .data          0x0000c230        0x0 t.o
+ .data          0x0000c230       0x50 m2.o
+                0x0000c230                _bucket_dir
+ .data          0x0000c280      0x100 g.o
+ .data          0x0000c380        0x0 pic.o
+ .data          0x0000c380        0x0 k1.o
+ .data          0x0000c380        0x0 kb.o
+ .data          0x0000c380        0x0 fifo.o
+ .data          0x0000c380        0x0 m1.o
+ .data          0x0000c380      0x110 c.o
+                0x0000c380                __ctype
+ .data          0x0000c490        0x0 v.o
+ .data          0x0000c490        0x0 s.o
  *(.bss)
- .bss           0x0000bea0        0x0 head.o
- .bss           0x0000bea0        0xc m.o
-                0x0000bea0                _memory_end
-                0x0000bea4                _buffer_memory_end
-                0x0000bea8                _main_memory_start
- .bss           0x0000beac      0xf10 me.o
-                0x0000beac                _HIGH_MEMORY
-                0x0000bebc                _mem_map
- *fill*         0x0000cdbc        0x4 
- .bss           0x0000cdc0        0x0 asm.o
- .bss           0x0000cdc0        0x0 t.o
- .bss           0x0000cdc0        0x4 m2.o
-                0x0000cdc0                _free_bucket_desc
- .bss           0x0000cdc4        0x0 g.o
- .bss           0x0000cdc4        0x0 pic.o
- .bss           0x0000cdc4        0x0 k1.o
- *fill*         0x0000cdc4        0x4 
- .bss           0x0000cdc8        0x0 kb.o
- .bss           0x0000cdc8        0x0 fifo.o
- .bss           0x0000cdc8        0x0 m1.o
- .bss           0x0000cdc8        0x0 c.o
- .bss           0x0000cdc8        0x0 v.o
- .bss           0x0000cdc8        0x0 s.o
+ .bss           0x0000c490        0x0 head.o
+ .bss           0x0000c490        0xc m.o
+                0x0000c490                _memory_end
+                0x0000c494                _buffer_memory_end
+                0x0000c498                _main_memory_start
+ .bss           0x0000c49c      0xf10 me.o
+                0x0000c49c                _HIGH_MEMORY
+                0x0000c4ac                _mem_map
+ *fill*         0x0000d3ac        0x4 
+ .bss           0x0000d3b0        0x0 asm.o
+ .bss           0x0000d3b0        0x0 t.o
+ .bss           0x0000d3b0        0x4 m2.o
+                0x0000d3b0                _free_bucket_desc
+ .bss           0x0000d3b4        0x8 g.o
+ .bss           0x0000d3bc        0x0 pic.o
+ .bss           0x0000d3bc        0x0 k1.o
+ *fill*         0x0000d3bc        0x4 
+ .bss           0x0000d3c0        0x0 kb.o
+ .bss           0x0000d3c0        0x0 fifo.o
+ .bss           0x0000d3c0        0x0 m1.o
+ .bss           0x0000d3c0        0x0 c.o
+ .bss           0x0000d3c0        0x0 v.o
+ .bss           0x0000d3c0        0x0 s.o
  *(.*)
- .comment       0x0000cdc8       0x14 m.o
- .eh_frame      0x0000cddc       0x94 m.o
- .comment       0x0000ce70       0x14 me.o
- .eh_frame      0x0000ce84       0xa4 me.o
- .comment       0x0000cf28       0x14 t.o
- .eh_frame      0x0000cf3c      0x1dc t.o
- .comment       0x0000d118       0x14 m2.o
- .eh_frame      0x0000d12c       0x68 m2.o
- .comment       0x0000d194       0x14 g.o
- .eh_frame      0x0000d1a8      0x104 g.o
- .comment       0x0000d2ac       0x14 pic.o
- .eh_frame      0x0000d2c0       0xc4 pic.o
- .comment       0x0000d384       0x14 k1.o
- .eh_frame      0x0000d398       0x70 k1.o
- .comment       0x0000d408       0x14 fifo.o
- .eh_frame      0x0000d41c       0x6c fifo.o
- .comment       0x0000d488       0x14 m1.o
- .eh_frame      0x0000d49c       0x8c m1.o
- .comment       0x0000d528       0x14 c.o
- .comment       0x0000d53c       0x14 v.o
- .eh_frame      0x0000d550       0xc8 v.o
- .comment       0x0000d618       0x14 s.o
- .eh_frame      0x0000d62c       0x5c s.o
+ .comment       0x0000d3c0       0x14 m.o
+ .eh_frame      0x0000d3d4       0x90 m.o
+ .comment       0x0000d464       0x14 me.o
+ .eh_frame      0x0000d478       0xa4 me.o
+ .comment       0x0000d51c       0x14 t.o
+ .eh_frame      0x0000d530      0x1dc t.o
+ .comment       0x0000d70c       0x14 m2.o
+ .eh_frame      0x0000d720       0x68 m2.o
+ .comment       0x0000d788       0x14 g.o
+ .eh_frame      0x0000d79c      0x128 g.o
+ .comment       0x0000d8c4       0x14 pic.o
+ .eh_frame      0x0000d8d8       0xc4 pic.o
+ .comment       0x0000d99c       0x14 k1.o
+ .eh_frame      0x0000d9b0       0x70 k1.o
+ .comment       0x0000da20       0x14 fifo.o
+ .eh_frame      0x0000da34       0x6c fifo.o
+ .comment       0x0000daa0       0x14 m1.o
+ .eh_frame      0x0000dab4       0x8c m1.o
+ .comment       0x0000db40       0x14 c.o
+ .comment       0x0000db54       0x14 v.o
+ .eh_frame      0x0000db68       0xc8 v.o
+ .comment       0x0000dc30       0x14 s.o
+ .eh_frame      0x0000dc44       0xbc s.o
 LOAD head.o
 LOAD m.o
 LOAD me.o
@@ -202,15 +207,15 @@ LOAD v.o
 LOAD s.o
 OUTPUT(kernel binary)
 
-.bss            0x0000d688       0x90
- COMMON         0x0000d688       0x50 m.o
-                0x0000d688                _boot_info
-                0x0000d698                _fifo
-                0x0000d6b8                _fifomouse
- COMMON         0x0000d6d8       0x10 k1.o
-                0x0000d6d8                _kbFIFO
- COMMON         0x0000d6e8       0x20 m1.o
-                0x0000d6e8                _mousefifo
-                0x0000d6f8                _offset
- COMMON         0x0000d708       0x10 c.o
-                0x0000d708                __ctmp
+.bss            0x0000dd00       0x90
+ COMMON         0x0000dd00       0x50 m.o
+                0x0000dd00                _boot_info
+                0x0000dd10                _fifo
+                0x0000dd30                _fifomouse
+ COMMON         0x0000dd50       0x10 k1.o
+                0x0000dd50                _kbFIFO
+ COMMON         0x0000dd60       0x20 m1.o
+                0x0000dd60                _mousefifo
+                0x0000dd70                _offset
+ COMMON         0x0000dd80       0x10 c.o
+                0x0000dd80                __ctmp

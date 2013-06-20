@@ -50,7 +50,7 @@ static void time_init(void)
 	}while(time.tm_sec != CMOS_READ(0));
 	
 }
-void init_device();
+void memory_set();
 struct FIFO fifo;
 struct FIFO fifomouse;
 
@@ -58,7 +58,7 @@ void main()
 {
 	int buf[128];
 	int bufmouse[128];
-	char mousebuf[256];
+	
 	//int x=0,y=0;
 	char  str[20];
 	unsigned char kbdus[128] =
@@ -104,20 +104,50 @@ void main()
 	struct MOUSE_DEC mdec = {0};
 	int mx,my;
 	struct SHTCTL *shtctl;
+	unsigned char mousebuf[256], *buf_back;
+	
+	struct SHEET* sht_back, *sht_mouse;
 	fifo_init(&fifo, buf, 128);
 	fifo_init(&fifomouse, bufmouse, 128);
-	init_device();	
-	init_mouse_cursor8(mousebuf, VGA_BLUE);
-	mx = (boot_info.scrnx - 16) / 2;
-	my = (boot_info.scrny - 28 - 16) / 2;
-	copy_rectangle(boot_info.vram, boot_info.scrnx, mx, my, 16, 16, mousebuf);
-	sti();
+	//控制内存
+	memory_set();
+	//初始化各种中断
+	trap_init();
+	//初始化pic
+	init_pic();
+	//time_init();
+	//开启键盘中断
+	init_keyboard(&fifo);
+	//开启鼠标中断
+	init_mouse(&fifomouse, 256);
+	//初始化界面控制器
 	shtctl = shtctl_init(boot_info.vram, boot_info.scrnx, boot_info.scrny);
 	if(shtctl == 0)
 	{
 		printf("sheet init failed!");
 		for(;;);
-	}
+	}	
+	
+	//背景图层
+	sht_back = sheet_alloc(shtctl);
+	buf_back = (unsigned char * )malloc(boot_info.scrnx * boot_info.scrny);
+	init_screen(buf_back, boot_info.scrnx, boot_info.scrny);
+	sheet_setbuf(sht_back, buf_back, boot_info.scrnx, boot_info.scrny,-1);
+	sheet_slide(shtctl, sht_back, 0, 0);
+	//鼠标图层
+	sht_mouse = sheet_alloc(shtctl);
+	init_mouse_cursor8(mousebuf, 99);
+	sheet_setbuf(sht_mouse, mousebuf, 16, 16, 99);
+	mx = (boot_info.scrnx - 16) / 2;
+	my = (boot_info.scrny - 28 - 16) / 2;
+	sheet_slide(shtctl, sht_mouse, mx, my);
+	
+	sheet_updown(shtctl, sht_back,  0);
+	//sheet_updown(sht_win, 3);
+	sheet_updown(shtctl, sht_mouse, 1);
+	
+	sti();
+	
 	for(;;)
 	{
 		cli();
@@ -141,12 +171,13 @@ void main()
 				data = fifo_get(&fifomouse);
 				if(mousedecode(&mdec, data - 256) == 1)	
 				{
-					fill_rectangle(boot_info.vram, boot_info.scrnx, VGA_BLUE, mx, my, mx + 15, my + 15);
+					//fill_rectangle(boot_info.vram, boot_info.scrnx, VGA_BLUE, mx, my, mx + 15, my + 15);
 					mx += mdec.x;
 					my += mdec.y;
 					mx = (mx >= 0 ? ((mx <= boot_info.scrnx - 16) ? mx:boot_info.scrnx - 16) : 0);
 					my = (my >= 0 ? ((my <= boot_info.scrny - 16) ? my:boot_info.scrny - 16) : 0);
-					copy_rectangle(boot_info.vram, boot_info.scrnx, mx, my, 16, 16, mousebuf);	
+					//sheet_slide(shtctl, sht_mouse, mx, my);
+					
 				}				
 				
 					
@@ -159,7 +190,7 @@ void main()
 	//__asm__ __volatile__("hlt");
 }
 
-void init_device()
+void memory_set()
 {
 //在这里我们的界面起始有一部分地址，这部分地址因为远超16M内存了，所以貌似完全不用考虑了。
 	boot_info = *((struct BOOT_INFO*)BOOT_INFO_ADDR);
@@ -176,16 +207,10 @@ void init_device()
 	
 	main_memory_start = buffer_memory_end;			//主内存区起始位置=缓冲区末端
 	mem_init(main_memory_start, memory_end);
-	trap_init();
-	init_screen(boot_info.vram, boot_info.scrnx, boot_info.scrny);
-	init_pic();
-	//time_init();
-	init_keyboard(&fifo);
-	init_mouse(&fifomouse, 256);
-	
 }
 #include "./include/stdarg.h"
 extern int vsprintf(char *buf, const char *fmt, va_list args);
+ extern void draw_string_print(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
 void printf(const char*fmt, ...)
 {
 	char buf[100];
@@ -194,5 +219,5 @@ void printf(const char*fmt, ...)
 	va_start(args, fmt);
 	vsprintf(buf,fmt,args);
 	va_end(args);
-	draw_string(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, buf);
+	draw_string_print(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, buf);
 }

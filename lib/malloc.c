@@ -61,14 +61,22 @@ void * malloc(unsigned int len)
 			break;
 		}
 	}
-	
-	if(!bdir->size)
-	{
-		//printk("malloc called with impossibly large argument(%d)\n",len);
-		panic("malloc:bad arg");
-		return;
-	}
 	cli();//禁用中断为了防止竞争的行为
+	if(!bdir->size)//说明申请的内存过大，我们就不做缓存直接获取大的内存
+	{
+		//printf("malloc called with large argument(%d)\n",len);
+		//panic("malloc:bad arg");
+		if((len & 0xFFF)  == 0)
+		{
+			retval = get_liner_pages(len >> 12);
+		}else
+		{
+			retval = get_liner_pages((len >> 12) + 1);
+		}
+		printf("malloc called with large argument(%d)\n",(unsigned long)retval);
+		return retval;
+	}
+	
 	//搜索相应的桶目录项的描述符链表，查找具有空闲空间的桶描述符
 	for(bdesc = bdir->chain; bdesc; bdesc = bdesc->next)
 	{	
@@ -93,7 +101,7 @@ void * malloc(unsigned int len)
 		if(!cp)
 		{
 			panic("Oout of memory in kernel malloc()");
-			return;
+			return 0;
 		}
 		
 		for(i = PAGE_SIZE/bdir->size; i > 1; i--)
@@ -135,7 +143,20 @@ void free_s(void *obj, int size)
 			prev = bdesc;
 		}
 	}
-	
+	//如果申请的大内存
+	if(size > 0x1000)
+	{
+		printf("malloc called with large argument(%d)\n",size >> 12);
+		if((size & 0xFFF)  == 0)
+		{
+			free_liner_pages(page, size >> 12);
+			
+		}else
+		{
+			free_liner_pages(page, (size >> 12) + 1);
+		}
+		return;	
+	}
 	panic("bad address passed to kernel free_s()");
 	return;
 found:

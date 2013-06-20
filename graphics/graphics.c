@@ -46,6 +46,15 @@ inline void draw_string(unsigned char* vram, int xsize, char color, int posx, in
 		posx +=8;
 	}
 }
+inline void draw_string_print(unsigned char* vram, int xsize, char color, int posx, int posy, char*str)
+{
+	static int x,y;
+	for(;*str!=0;str++)
+	{
+		draw_char8(vram, xsize, color, x, y , *str);
+		x += 8;
+	}
+}
 inline void draw_char(unsigned char *vram, int xsize, char color, int posx, int posy, char s)
 {
 	draw_char8(vram,xsize ,color,posx,posy , s);
@@ -53,6 +62,7 @@ inline void draw_char(unsigned char *vram, int xsize, char color, int posx, int 
 
 void init_mouse_cursor8(unsigned char *mouse, char bc)
 {
+	__asm__("cld"::);//估计是之前没有清方向寄存器
 	char cursor[16][16] = {
 		"**************..",
 		"*OOOOOOOOOOO*...",
@@ -75,18 +85,18 @@ void init_mouse_cursor8(unsigned char *mouse, char bc)
 
 	for (y = 0; y < 16; y++) {
 		for (x = 0; x < 16; x++) {
-			if (cursor[y][x] == '*') {
+			
+			if(cursor[y][x] == '*') {
 				mouse[y * 16 + x] = VGA_BLACK;
 			}
-			if (cursor[y][x] == 'O') {
+			else if(cursor[y][x] == 'O') {
 				mouse[y * 16 + x] = VGA_WHITE;
 			}
-			if (cursor[y][x] == '.') {
+			else if(cursor[y][x] == '.') {
 				mouse[y * 16 + x] = bc;
 			}
 		}
 	}
-	return;
 }
 
 void init_screen(unsigned char *vram, int xsize, int ysize)
@@ -108,9 +118,6 @@ void init_screen(unsigned char *vram, int xsize, int ysize)
 	fill_rectangle(vram, xsize, VGA_WHITE,     xsize - 47, ysize -  3, xsize -  4, ysize -  3);
 	fill_rectangle(vram, xsize, VGA_WHITE,     xsize -  3, ysize - 24, xsize -  3, ysize -  3);
 
-	
-	
-	
 }
 
 
