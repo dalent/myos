@@ -176,7 +176,7 @@ void main()
 					my += mdec.y;
 					mx = (mx >= 0 ? ((mx <= boot_info.scrnx - 16) ? mx:boot_info.scrnx - 16) : 0);
 					my = (my >= 0 ? ((my <= boot_info.scrny - 16) ? my:boot_info.scrny - 16) : 0);
-					//sheet_slide(shtctl, sht_mouse, mx, my);
+					sheet_slide(shtctl, sht_mouse, mx, my);
 					
 				}				
 				

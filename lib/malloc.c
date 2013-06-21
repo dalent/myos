@@ -68,10 +68,10 @@ void * malloc(unsigned int len)
 		//panic("malloc:bad arg");
 		if((len & 0xFFF)  == 0)
 		{
-			retval = get_liner_pages(len >> 12);
+			retval = (void*)get_liner_pages(len >> 12);
 		}else
 		{
-			retval = get_liner_pages((len >> 12) + 1);
+			retval = (void*)get_liner_pages((len >> 12) + 1);
 		}
 		printf("malloc called with large argument(%d)\n",(unsigned long)retval);
 		return retval;
@@ -121,7 +121,7 @@ void * malloc(unsigned int len)
 	return(retval);
 }
 
-void free_s(void *obj, int size)
+void free_s(void *obj, unsigned int size)
 {
 	void *page;
 	struct _bucket_dir *bdir;
@@ -149,11 +149,11 @@ void free_s(void *obj, int size)
 		printf("malloc called with large argument(%d)\n",size >> 12);
 		if((size & 0xFFF)  == 0)
 		{
-			free_liner_pages(page, size >> 12);
+			free_liner_pages((unsigned long)page, size >> 12);
 			
 		}else
 		{
-			free_liner_pages(page, (size >> 12) + 1);
+			free_liner_pages((unsigned long)page, (size >> 12) + 1);
 		}
 		return;	
 	}

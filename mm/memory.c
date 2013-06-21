@@ -69,7 +69,7 @@ unsigned long get_free_page()
 			:"3","4","dx");
 	return __res;//·µ»Ø¿ÕÏĞÒ³Ãæ
 }
-unsigned long get_liner_pages(int count)
+unsigned long get_liner_pages(unsigned int count)
 {
 	//cli();
 	int i;
@@ -102,7 +102,7 @@ unsigned long get_liner_pages(int count)
 	return LOW_MEM + ((i - count + 1) << 12);
 	
 }
-void free_liner_pages(unsigned long addr, int count)
+void free_liner_pages(unsigned long addr,unsigned int count)
 {
 	int i;
 	if(addr < LOW_MEM) return;
