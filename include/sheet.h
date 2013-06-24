@@ -22,4 +22,13 @@ extern void sheet_updown(struct SHTCTL *ctl, struct SHEET* sht, int height);
 extern void sheet_refresh(struct SHTCTL *ctl);
 extern void sheet_free(struct SHEET *sht);
 extern void sheet_slide(struct SHTCTL *ctl,struct SHEET* sht, int vx, int vy);
+extern void fill_rectangle(unsigned char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty);
+extern void copy_rectangle(unsigned char *vram, int xsize, int srcx, int srcy, int width, int height, char *block);
+extern void draw_string(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
+extern void init_mouse_cursor(unsigned char *mouse, char bc);
+extern void init_screen(unsigned char *vram, int xsize, int ysize);
+extern void make_window(unsigned char *buf, int xsize, int ysize , char* title, char act);
+extern void make_textbox(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
+extern void draw_char(unsigned char *vram, int xsize, char color, int posx, int posy, char s);
+extern void init_palette(void);
 #endif

@@ -11,6 +11,8 @@
 #include "./include/VGA.h"
 #include "./include/char.h"
 #include "./include/sheet.h"
+#include "./include/stdlib.h"
+#include "./include/kernel.h"
 struct BOOT_INFO
 {
 	char led,vmode;
@@ -19,17 +21,12 @@ struct BOOT_INFO
 	unsigned long ext_mem_k;
 };
 extern void mem_init(long start, long end);
-extern void init_screen(unsigned char *vram, int xsize, int ysize);
-extern void draw_char8(unsigned char *vram, int xsize, char color, int posx, int posy, char s);
 extern void trap_init();
+extern void init_pic();
 extern void init_keyboard(struct FIFO * fifo) ;
 extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
 extern void init_mouse(struct FIFO * fifo, int data0);
-extern void copy_rectangle(unsigned char *vram, int xsize, int srcx, int srcy, int width, int height, char *block);
-extern void init_mouse_cursor8(char *mouse, char bc);
-extern void fill_rectangle(unsigned char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty);
 extern int sprintf(char * buf, const char *fmt, ...);
-extern void draw_string(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
 extern void printf(const char*fmt, ...);
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
@@ -54,13 +51,26 @@ void memory_set();
 struct FIFO fifo;
 struct FIFO fifomouse;
 
+struct SHEET* open_console(struct SHTCTL *ctl)
+{
+	struct SHEET *sht_cons = sheet_alloc(ctl);
+	unsigned char *buf_cons = (unsigned char *)malloc(256 * 165);
+	if(0 == buf_cons)
+	{
+		panic("open console failed");
+	}
+	sheet_setbuf(sht_cons, buf_cons, 256, 165, -10);
+	make_window(buf_cons, 256 , 165, "console", 0);
+	make_textbox(sht_cons, 8, 28, 240, 128, VGA_BLACK);
+	return sht_cons;
+}
+
 void main()
 {
 	int buf[128];
 	int bufmouse[128];
 	
 	//int x=0,y=0;
-	char  str[20];
 	unsigned char kbdus[128] =
 	{
 		0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
@@ -106,7 +116,7 @@ void main()
 	struct SHTCTL *shtctl;
 	unsigned char mousebuf[256], *buf_back;
 	
-	struct SHEET* sht_back, *sht_mouse;
+	struct SHEET* sht_back, *sht_mouse, *sht_cons;
 	fifo_init(&fifo, buf, 128);
 	fifo_init(&fifomouse, bufmouse, 128);
 	//控制内存
@@ -121,6 +131,7 @@ void main()
 	//开启鼠标中断
 	init_mouse(&fifomouse, 256);
 	//初始化界面控制器
+	init_palette();
 	shtctl = shtctl_init(boot_info.vram, boot_info.scrnx, boot_info.scrny);
 	if(shtctl == 0)
 	{
@@ -136,15 +147,20 @@ void main()
 	sheet_slide(shtctl, sht_back, 0, 0);
 	//鼠标图层
 	sht_mouse = sheet_alloc(shtctl);
-	init_mouse_cursor8(mousebuf, 99);
+	init_mouse_cursor(mousebuf, 99);
 	sheet_setbuf(sht_mouse, mousebuf, 16, 16, 99);
 	mx = (boot_info.scrnx - 16) / 2;
 	my = (boot_info.scrny - 28 - 16) / 2;
 	sheet_slide(shtctl, sht_mouse, mx, my);
 	
+	sht_cons = open_console(shtctl);
+	sheet_slide(shtctl, sht_cons, 56,  6);
+	
 	sheet_updown(shtctl, sht_back,  0);
 	//sheet_updown(sht_win, 3);
-	sheet_updown(shtctl, sht_mouse, 1);
+	sheet_updown(shtctl, sht_cons, 1);
+	sheet_updown(shtctl, sht_mouse, 2);
+
 	
 	sti();
 	
@@ -221,3 +237,5 @@ void printf(const char*fmt, ...)
 	va_end(args);
 	draw_string_print(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, buf);
 }
+
+

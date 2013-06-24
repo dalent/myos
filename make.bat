@@ -5,7 +5,7 @@ set idt=.\..\idt
 set vga=.\..\graphics
 set char=.\..\char
 set std=.\..\std
-set object=head.o m.o me.o asm.o t.o m2.o g.o pic.o k1.o kb.o fifo.o m1.o c.o v.o s.o
+set object=head.o m.o me.o asm.o t.o m2.o g.o pic.o k1.o kb.o fifo.o m1.o c.o v.o s.o w.o
 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
@@ -24,6 +24,7 @@ del *.o
 cd %vga%
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o g.o graphics.c
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o s.o sheet.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o w.o window.c
 copy *.o .\..\%bin_path%\ 
 del *.o
 

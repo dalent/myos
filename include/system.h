@@ -6,6 +6,10 @@
 #define nop() __asm__("nop"::);
 #define iret() __asm__("iret"::);
 #define hlt()  __asm__("hlt"::);
+#define load_eflags(x)\
+__asm__ __volatile__("pushfl; popl %0":"=r"(x):/*no input*/:"memory")
+#define restore_eflags(x)\
+__asm__ __volatile__("pushl %0;popfl":/*no output*/:"r"(x):"memory")
 //eax 组成前4个字节，前两个字节是地址的低16位，后2个字节是段寄存器的选择符
 //edx组成后四个字节，第一个字节是0，第2个字节是属性，后两个字节是地址的高16位
 /*

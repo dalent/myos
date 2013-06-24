@@ -2,6 +2,8 @@
 //该函数负责填充一个矩形
 //http://www.brackeen.com/vga/basics.html
 #include "./../include/VGA.h"
+#include "./../include/system.h"
+#include "./../include/io.h"
 void fill_rectangle(unsigned char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty)
 {
 	int x,y;
@@ -60,9 +62,9 @@ inline void draw_char(unsigned char *vram, int xsize, char color, int posx, int 
 	draw_char8(vram,xsize ,color,posx,posy , s);
 }
 
-void init_mouse_cursor8(unsigned char *mouse, char bc)
+void init_mouse_cursor(unsigned char *mouse, char bc)
 {
-	__asm__("cld"::);//估计是之前没有清方向寄存器
+	__asm__("cld"::);//估计是之前没有清方向寄存器,下面copy内存的时候总是出错
 	char cursor[16][16] = {
 		"**************..",
 		"*OOOOOOOOOOO*...",
@@ -119,6 +121,60 @@ void init_screen(unsigned char *vram, int xsize, int ysize)
 	fill_rectangle(vram, xsize, VGA_WHITE,     xsize -  3, ysize - 24, xsize -  3, ysize -  3);
 
 }
+#define CONTROL_PORT 0x03c8
+#define DATA_PORT 0x03c9
+void set_palette(int start, int end, unsigned char * rgb)
+{
+	unsigned long i,eflags;
+	load_eflags(eflags);
+	cli();
+	outb(start, CONTROL_PORT);
+	for(i = start; i <= end; i++)
+	{
+		outb(rgb[0] / 4, DATA_PORT);
+		outb(rgb[1] / 4, DATA_PORT);
+		outb(rgb[2] / 4, DATA_PORT);
+		rgb += 3;
+	}
+	
+	restore_eflags(eflags);
+	
+}
+void init_palette(void)//可能我们需要重新写一下调色板，因为用bochs和virtualbox表现出来的颜色不一致
+{
+	//我们可以重新设置调色板，通过下边的方式
+	 // static unsigned char table_rgb[16 * 3] = {//我们其实只需要15个颜色 这就足够了。
+		// 0x00, 0x00, 0x00,	//  0:黑色 
+		// 0xff, 0x00, 0x00,	//  1:亮红
+		// 0x00, 0xff, 0x00,	//  2:亮绿
+		// 0xff, 0xff, 0x00,	//  3:亮黄 
+		// 0x00, 0x00, 0xff,	//  4:亮青 
+		// 0xff, 0x00, 0xff,	//  5:亮紫 
+		// 0x00, 0xff, 0xff,	//  6:亮水 
+		// 0xc6, 0xc6, 0xc6,	//  7:亮灰 
+		// 0x84, 0x84, 0x84,	//  8:暗灰 
+		// 0x84, 0x00, 0x00,	//  9:黯红 
+		// 0x00, 0x84, 0x00,	// 10:暗绿 
+		// 0x84, 0x84, 0x00,	// 11:暗黄 
+		// 0x00, 0x00, 0x84,	// 12:暗青 
+		// 0x84, 0x00, 0x84,	// 13:暗紫 
+		// 0x00, 0x84, 0x84,	// 14:暗水 
+		// 0xff, 0xff, 0xff,	// 15:白 
+	// };
+	// set_palette(0, 15, table_rgb);
+	//本来的调色板，貌似在virtualbox 和bochs不一致，我决定主动设置下
+	unsigned long i,eflags;
+	load_eflags(eflags);
+	cli();
+	outb(8, CONTROL_PORT);
+	outb(0x84 / 4, DATA_PORT);
+	outb(0x84 / 4, DATA_PORT);
+	outb(0x84 / 4, DATA_PORT);
+	restore_eflags(eflags);
+	
+}
+
+
 
 
 
