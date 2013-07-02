@@ -19,7 +19,7 @@
 #define MOUSECMD_ENABLE 0xf4
 extern void mouse_interupt_asm();
 struct FIFO * mousefifo;
-int offset;
+unsigned int offset;
 void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec)
 {
 	mousefifo = fifo;
@@ -38,15 +38,11 @@ void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec)
 
 void do_mouse_interupt()
 {
-	int data;
+	unsigned int data;
 	PIC_sendEOI(12);
-	//outb(0x20, 0xA0);
-	//outb(0x20,0x20);
+	
 	data = inb(KB_DATA);
 	fifo_put(mousefifo, offset + data);
-	//outb(0x64, 0xA0);
-	//outb(0x62,0x20);
-	//inb(KB_DATA);
 }
 /*
 			Bit 7	 Bit 6	     Bit 5	     Bit 4	    Bit 3	    Bit 2	     Bit 1	 Bit 0

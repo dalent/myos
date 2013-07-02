@@ -25,7 +25,7 @@ extern void trap_init();
 extern void init_pic();
 extern void init_keyboard(struct FIFO * fifo) ;
 extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
-extern void init_mouse(struct FIFO * fifo, int data0);
+extern void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec);
 extern int sprintf(char * buf, const char *fmt, ...);
 extern void printf(const char*fmt, ...);
 struct BOOT_INFO boot_info;
@@ -64,7 +64,7 @@ struct SHEET* open_console(struct SHTCTL *ctl)
 	make_textbox(sht_cons, 8, 28, 240, 128, VGA_BLACK);
 	return sht_cons;
 }
-
+extern int counter ;
 void main()
 {
 	int buf[128];
@@ -129,8 +129,9 @@ void main()
 	//开启键盘中断
 	init_keyboard(&fifo);
 	//开启鼠标中断
-	init_mouse(&fifomouse, 256);
+	init_mouse(&fifo, 256, &mdec);
 	//初始化界面控制器
+	init_pit();
 	init_palette();
 	shtctl = shtctl_init(boot_info.vram, boot_info.scrnx, boot_info.scrny);
 	if(shtctl == 0)
@@ -167,6 +168,8 @@ void main()
 	for(;;)
 	{
 		cli();
+		if(counter%100 == 0)
+		 printf("%d", counter);
 		if((fifo_status(&fifo) +fifo_status(&fifomouse))  == 0)
 		{	
 		//sti();
@@ -174,18 +177,15 @@ void main()
 		}else 
 		{
 			int data;
-			if(fifo_status(&fifo) != 0)
+			
+			data = fifo_get(&fifo);
+			sti();
+			if(data < 256)
+				draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
+			else 
 			{
-				data = fifo_get(&fifo);
-				sti();
-				if(data <= 256)
-					draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
-			}
-			else if(fifo_status(&fifomouse) != 0)
-			{
-				int data;
-				data = fifo_get(&fifomouse);
-				if(mousedecode(&mdec, data - 256) == 1)	
+				data -= 256;
+				if(mousedecode(&mdec, data) == 1)	
 				{
 					//fill_rectangle(boot_info.vram, boot_info.scrnx, VGA_BLUE, mx, my, mx + 15, my + 15);
 					mx += mdec.x;
