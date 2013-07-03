@@ -19,7 +19,7 @@ extern struct SHTCTL*shtctl_init(unsigned char * vram, int xsize, int ysize);
 extern struct SHEET* sheet_alloc(struct SHTCTL* ctl);
 extern void sheet_setbuf(struct SHEET*sht, unsigned char * buf, int xsize, int ysize, int col_inv);
 extern void sheet_updown(struct SHTCTL *ctl, struct SHEET* sht, int height);
-extern void sheet_refresh(struct SHTCTL *ctl);
+extern void sheet_refresh(struct SHTCTL *ctl,struct SHEET*sht,int vx0,int vy0,int vx1, int vy1);
 extern void sheet_free(struct SHEET *sht);
 extern void sheet_slide(struct SHTCTL *ctl,struct SHEET* sht, int vx, int vy);
 extern void fill_rectangle(unsigned char* vram, int xsize, char c, int srcx,int srcy, int destx, int desty);

@@ -8,7 +8,7 @@ void write_str2window(struct SHTCTL *ctl, struct SHEET*sht, int x, int y, int c,
 {
 	fill_rectangle(sht->buf, sht->bxsize, b, x, y,  x + l * 8, y + 15);
 	draw_string   (sht->buf, sht->bxsize, c, x, y, 	s);
-	sheet_refresh(ctl);
+	sheet_refresh(ctl,sht,x,y,x+l*8,y+15);
 }
 void make_title(unsigned char * buf, int xsize, char *title, char act)
 {
