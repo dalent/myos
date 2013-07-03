@@ -32,11 +32,13 @@ struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
 unsigned long main_memory_start = 0;//主内存开始的地址
+#define BCD_TO_BIN(val) ((val) = ((val)&15) + ((val)>>4)*10) 
 #define CMOS_READ(addr)\
  ({ outb_p(0x80|addr, 0x70);inb_p(0x71);})
+ struct tm time;
 static void time_init(void)
 {
-	struct tm time;
+	
 	do{
 		time.tm_sec = CMOS_READ(0);
 		time.tm_min = CMOS_READ(2);
@@ -46,6 +48,12 @@ static void time_init(void)
 		time.tm_year = CMOS_READ(9);
 	}while(time.tm_sec != CMOS_READ(0));
 	
+	BCD_TO_BIN(time.tm_sec);
+	BCD_TO_BIN(time.tm_min);
+	BCD_TO_BIN(time.tm_hour);
+	BCD_TO_BIN(time.tm_mday);
+	BCD_TO_BIN(time.tm_mon);
+	BCD_TO_BIN(time.tm_year);
 }
 void memory_set();
 struct FIFO fifo;
@@ -125,7 +133,7 @@ void main()
 	trap_init();
 	//初始化pic
 	init_pic();
-	//time_init();
+	time_init();
 	//开启键盘中断
 	init_keyboard(&fifo);
 	//开启鼠标中断
@@ -161,15 +169,19 @@ void main()
 	//sheet_updown(sht_win, 3);
 	sheet_updown(shtctl, sht_cons, 1);
 	sheet_updown(shtctl, sht_mouse, 2);
-
 	
+	show_time(shtctl,sht_back);
 	sti();
 	
 	for(;;)
 	{
 		cli();
-		if(counter%100 == 0)
-		 printf("%d", counter);
+		if(counter%100000 == 0)
+		{
+			time.tm_min++;
+			show_time(shtctl,sht_back);
+			
+		}
 		if((fifo_status(&fifo) +fifo_status(&fifomouse))  == 0)
 		{	
 		//sti();
@@ -236,6 +248,17 @@ void printf(const char*fmt, ...)
 	vsprintf(buf,fmt,args);
 	va_end(args);
 	draw_string_print(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, buf);
+}
+
+void show_time(struct SHTCTL* ctl,struct SHEET*sht)
+{
+
+	char tm[20];
+	sprintf(tm,"%04d/%02d/%02d  %02d:%02d",time.tm_year,time.tm_mon, time.tm_wday,time.tm_hour,time.tm_min);
+	draw_string(sht->buf,sht->bxsize,VGA_BLACK, 5, sht->bysize - 20, tm);
+	sheet_refresh(ctl);
+	
+	
 }
 
 

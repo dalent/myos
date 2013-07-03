@@ -11,6 +11,7 @@
 #include "./../include/kernel.h"
 #include "./../include/head.h"
 #include "./../include/system.h"
+#include "./../include/time.h"
 /*web :http://wiki.osdev.org/Programmable_Interval_Timer
 Bits         Usage
  6 and 7      Select channel :
@@ -47,7 +48,7 @@ void init_pit()
 {
 	set_intr_gate(0x20,time_interrupt_asm);//设置中断
 	outb(0x34,PIT_CMD);
-	outb(PIT_FREQUENCY/100,PIT_DATA);
-	outb((PIT_FREQUENCY/100)>>8,PIT_DATA);
+	outb((PIT_FREQUENCY+CLOCKS_PER_SEC/2)/CLOCKS_PER_SEC,PIT_DATA);
+	outb(((PIT_FREQUENCY+CLOCKS_PER_SEC/2)/CLOCKS_PER_SEC)>>8,PIT_DATA);
 	IRQ_Clear_mask(0);//开启中断
 }
