@@ -22,11 +22,12 @@ void draw_char(char *vram, int xsize, char color, int posx, int posy, char s);
 #define kEYCMD_READMODE 0x20
 #define KBC_MODE 0x47
 struct FIFO* kbFIFO;
-
-void init_keyboard(struct FIFO * fifo) 
+static unsigned int offset;
+void init_keyboard(struct FIFO * fifo,unsigned int data) 
 {
 	char ch;
 	kbFIFO = fifo; 
+	offset = data;
 	set_intr_gate(IQR_KB, kb_interupt_asm); 
 	//开启pic 1 中断处理
 	IRQ_Clear_mask(1);
@@ -58,7 +59,7 @@ void do_kb_interupt()
 	}
 	else
 	{
-		fifo_put(kbFIFO, data);
+		fifo_put(kbFIFO, offset + data);
 	}
 	//draw_char(0xe0000000, 1024, 15, 0,0, data);
 }

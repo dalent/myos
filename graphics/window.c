@@ -8,7 +8,7 @@ void write_str2window(struct SHTCTL *ctl, struct SHEET*sht, int x, int y, int c,
 {
 	fill_rectangle(sht->buf, sht->bxsize, b, x, y,  x + l * 8, y + 15);
 	draw_string   (sht->buf, sht->bxsize, c, x, y, 	s);
-	sheet_refresh(ctl,sht,x,y,x+l*8,y+15);
+	sheet_refresh(sht, x, y, x + l * 8,y + 15);
 }
 void make_title(unsigned char * buf, int xsize, char *title, char act)
 {
@@ -33,11 +33,11 @@ void make_title(unsigned char * buf, int xsize, char *title, char act)
 	char c, tc, tbc;
 	if(act != 0)
 	{
-		tc = VGA_BLACK;
-		tbc = VGA_LIGHT_CYAN;
+		tc = VGA_WHITE;
+		tbc = VGA_BLUE;
 	}else
 	{
-		tc = VGA_LIGHT_GRAY;
+		tc = VGA_WHITE;
 		tbc = VGA_DARK_GRAY;
 	}
 	
@@ -75,12 +75,12 @@ void make_window(unsigned char *buf, int xsize, int ysize , char* title, char ac
 	fill_rectangle(buf, xsize, VGA_DARK_GRAY,  xsize - 2, 1,  xsize - 2,         ysize - 2);
 	fill_rectangle(buf, xsize, VGA_WHITE,      xsize - 1, 0,  xsize - 1,         ysize - 1);
 	//画框体里面的数据
-	fill_rectangle(buf, xsize, VGA_LIGHT_GRAY, 3, 3,  xsize - 3,         ysize - 3);
+	fill_rectangle(buf, xsize, VGA_LIGHT_GRAY, 2, 2,  xsize - 2,         ysize - 2);
 	
 	make_title(buf, xsize,  title, act);
 }
 
-void make_textbox(struct SHEET *sht, int x0, int y0, int sx, int sy, int c)
+void make_textbox(struct SHEET *sht, int x0, int y0, int sx,/*宽度*/ int sy,/*高度*/ int c)
 {
 	int x1 = x0 + sx, y1 = y0 + sy;
 	//画上变得一条灰色线，和一条白色线条

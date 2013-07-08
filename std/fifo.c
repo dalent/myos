@@ -17,7 +17,7 @@ int fifo_put(struct FIFO *fifo, int ch)//´æ·ÅÊı¾İ
 	}
 	
 	fifo->buf[fifo->p] = ch;
-	fifo->p = (++fifo->p) % fifo->size;
+	fifo->p = (++(fifo->p)) % fifo->size;
 	--fifo->free;
 	return 0;
 }

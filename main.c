@@ -23,11 +23,12 @@ struct BOOT_INFO
 extern void mem_init(long start, long end);
 extern void trap_init();
 extern void init_pic();
-extern void init_keyboard(struct FIFO * fifo) ;
+extern void init_keyboard(struct FIFO * fifo,unsigned int data) ;
 extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
 extern void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec);
 extern int sprintf(char * buf, const char *fmt, ...);
 extern void printf(const char*fmt, ...);
+extern void update_time();
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
 unsigned long buffer_memory_end = 0;//高速缓冲区末端地址
@@ -57,7 +58,6 @@ static void time_init(void)
 }
 void memory_set();
 struct FIFO fifo;
-struct FIFO fifomouse;
 
 struct SHEET* open_console(struct SHTCTL *ctl)
 {
@@ -68,16 +68,24 @@ struct SHEET* open_console(struct SHTCTL *ctl)
 		panic("open console failed");
 	}
 	sheet_setbuf(sht_cons, buf_cons, 256, 165, -10);
-	make_window(buf_cons, 256 , 165, "console", 0);
+	make_window(buf_cons, 256 , 165, "console", 1);
 	make_textbox(sht_cons, 8, 28, 240, 128, VGA_BLACK);
 	return sht_cons;
+}
+
+struct SHEET* openwindow(struct SHTCTL *ctl)
+{
+	struct SHEET* sht = sheet_alloc(ctl);
+	unsigned char *buf = (unsigned char * )malloc(160 * 68);
+	sheet_setbuf(sht, buf,160, 68, -1);
+	make_window(buf, 160, 68, "window",-1);
+	return sht;
 }
 extern int counter ;
 void main()
 {
 	int buf[128];
-	int bufmouse[128];
-	
+	char buf1[20];
 	//int x=0,y=0;
 	unsigned char kbdus[128] =
 	{
@@ -124,9 +132,9 @@ void main()
 	struct SHTCTL *shtctl;
 	unsigned char mousebuf[256], *buf_back;
 	
-	struct SHEET* sht_back, *sht_mouse, *sht_cons;
+	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win;
+	struct TIMER* time,*time1;
 	fifo_init(&fifo, buf, 128);
-	fifo_init(&fifomouse, bufmouse, 128);
 	//控制内存
 	memory_set();
 	//初始化各种中断
@@ -135,9 +143,9 @@ void main()
 	init_pic();
 	time_init();
 	//开启键盘中断
-	init_keyboard(&fifo);
+	init_keyboard(&fifo, 256);
 	//开启鼠标中断
-	init_mouse(&fifo, 256, &mdec);
+	init_mouse(&fifo, 512, &mdec);
 	//初始化界面控制器
 	init_pit();
 	init_palette();
@@ -153,50 +161,76 @@ void main()
 	buf_back = (unsigned char * )malloc(boot_info.scrnx * boot_info.scrny);
 	init_screen(buf_back, boot_info.scrnx, boot_info.scrny);
 	sheet_setbuf(sht_back, buf_back, boot_info.scrnx, boot_info.scrny,-1);
-	sheet_slide(shtctl, sht_back, 0, 0);
+	sheet_slide(sht_back, 0, 0);
 	//鼠标图层
 	sht_mouse = sheet_alloc(shtctl);
 	init_mouse_cursor(mousebuf, 99);
 	sheet_setbuf(sht_mouse, mousebuf, 16, 16, 99);
 	mx = (boot_info.scrnx - 16) / 2;
 	my = (boot_info.scrny - 28 - 16) / 2;
-	sheet_slide(shtctl, sht_mouse, mx, my);
+	sheet_slide(sht_mouse, mx, my);
 	
 	sht_cons = open_console(shtctl);
-	sheet_slide(shtctl, sht_cons, 56,  6);
+	sheet_slide(sht_cons, 56,  6);
 	
-	sheet_updown(shtctl, sht_back,  0);
+	//timer window
+	sht_win = openwindow(shtctl);
+	sheet_slide(sht_win, 80,72);
+	make_textbox(sht_win, 9, 29, 155, 45, VGA_WHITE);
+	
+	sheet_updown(sht_back,  0);
 	//sheet_updown(sht_win, 3);
-	sheet_updown(shtctl, sht_cons, 1);
-	sheet_updown(shtctl, sht_mouse, 2);
+	sheet_updown(sht_cons, 1);
+	sheet_updown(sht_mouse, 3);
+	sheet_updown(sht_win, 2);
 	
 	show_time(shtctl,sht_back);
+	
+	//该时钟为了显示时间
+	time = timer_alloc();
+	timer_init(time,&fifo, 1);
+	timer_settime(time, 60*100);
+	
+	time1 = timer_alloc();
+	timer_init(time1,&fifo, 2);
+	timer_settime(time1, 1);
 	sti();
 	
 	for(;;)
 	{
 		cli();
-		if(counter%100000 == 0)
-		{
-			time.tm_min++;
-			show_time(shtctl,sht_back);
-			
-		}
-		if((fifo_status(&fifo) +fifo_status(&fifomouse))  == 0)
+		if(fifo_status(&fifo)  == 0)
 		{	
 		//sti();
 			stihlt();
 		}else 
 		{
 			int data;
-			
 			data = fifo_get(&fifo);
 			sti();
-			if(data < 256)
-				draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
-			else 
+			if(data == 1)//时间钟表
+			{
+				timer_settime(time,60*100);	
+				update_time();
+				show_time(shtctl,sht_back);
+			}
+			else if(data == 2)
+			{
+				timer_settime(time1,1);
+				sprintf(buf1,"%d",counter);
+				fill_rectangle(sht_win->buf,sht_win->bxsize,VGA_WHITE, 24, 28 ,100, 50);
+				draw_string(sht_win->buf, sht_win->bxsize, VGA_BLACK, 24, 28, buf1);
+				sheet_refresh(sht_win, 24, 28, 100, 50);
+			}
+			else if(data >= 256 && data < 512)
 			{
 				data -= 256;
+			    fill_rectangle(boot_info.vram, boot_info.scrnx,VGA_WHITE, 0, 0 ,8, 16);
+				draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
+			}
+			else 
+			{
+				data -= 512;
 				if(mousedecode(&mdec, data) == 1)	
 				{
 					//fill_rectangle(boot_info.vram, boot_info.scrnx, VGA_BLUE, mx, my, mx + 15, my + 15);
@@ -204,13 +238,9 @@ void main()
 					my += mdec.y;
 					mx = (mx >= 0 ? ((mx <= boot_info.scrnx - 16) ? mx:boot_info.scrnx - 16) : 0);
 					my = (my >= 0 ? ((my <= boot_info.scrny - 16) ? my:boot_info.scrny - 16) : 0);
-					sheet_slide(shtctl, sht_mouse, mx, my);
+					sheet_slide(sht_mouse, mx, my);
 					
-				}				
-				
-					
-			
-				
+				}							
 			}
 		}
 		
@@ -249,16 +279,29 @@ void printf(const char*fmt, ...)
 	va_end(args);
 	draw_string_print(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, buf);
 }
+void update_time()
+{
+	if(++time.tm_min%60 == 0)
+	{
+		time.tm_min = 0;
+		
+		if(++time.tm_hour%24 == 0)
+		{
+			time.tm_mday++;//我们这里就先不更新月份啦，因为更新月份考虑年份关系，后边再说
+		}
+	}
+	
 
+
+}
 void show_time(struct SHTCTL* ctl,struct SHEET*sht)
 {
 
 	char tm[20];
-	sprintf(tm,"%04d/%02d/%02d  %02d:%02d",time.tm_year,time.tm_mon, time.tm_wday,time.tm_hour,time.tm_min);
-	draw_string(sht->buf,sht->bxsize,VGA_BLACK, 5, sht->bysize - 20, tm);
-	sheet_refresh(ctl);
-	
-	
+	sprintf(tm,"2%03d/%02d/%02d %02d:%02d",time.tm_year,time.tm_mon, time.tm_mday,time.tm_hour,time.tm_min);
+	fill_rectangle(sht->buf,sht->bxsize,VGA_LIGHT_GRAY, sht->bxsize-140, sht->bysize - 20 ,sht->bxsize - 4, sht->bysize - 4 );
+	draw_string(sht->buf,sht->bxsize,VGA_BLACK, sht->bxsize-140, sht->bysize - 20, tm);
+	sheet_refresh(sht,sht->bxsize-140,sht->bysize - 20, sht->bxsize, sht->bysize - 4);
 }
 
 

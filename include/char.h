@@ -6,6 +6,11 @@
 			break;\
 		}	\
 }while(1);
+extern void PIC_sendEOI(unsigned char irq);
+extern void IRQ_Set_mask(unsigned char IRQline);
+extern void IRQ_Clear_mask(unsigned char IRQline);
+
+extern void do_mouse_interupt();
 
 struct MOUSE_DEC
 {
@@ -13,4 +18,7 @@ struct MOUSE_DEC
 	int x,y,btn;
 	
 };
+struct FIFO;
+extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
+extern void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec);
 #endif

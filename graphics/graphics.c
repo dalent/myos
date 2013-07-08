@@ -103,7 +103,7 @@ void init_mouse_cursor(unsigned char *mouse, char bc)
 
 void init_screen(unsigned char *vram, int xsize, int ysize)
 {
-	fill_rectangle(vram, xsize, VGA_BLUE, 0, 0, xsize - 1, ysize - 29);//上层蓝色
+	fill_rectangle(vram, xsize, VGA_GREEN, 0, 0, xsize - 1, ysize - 29);//上层蓝色
 	fill_rectangle(vram, xsize, VGA_LIGHT_GRAY, 0, ysize - 28, xsize - 1, ysize - 28);//暗灰色
 	fill_rectangle(vram, xsize, VGA_WHITE, 0, ysize - 27, xsize - 1, ysize - 27);//白色
 	fill_rectangle(vram, xsize, VGA_LIGHT_GRAY, 0, ysize - 26, xsize - 1, ysize - 1);//暗灰色
@@ -115,9 +115,9 @@ void init_screen(unsigned char *vram, int xsize, int ysize)
 	fill_rectangle(vram, xsize, VGA_BLACK,     2,          ysize - 3,  60,         ysize - 3);//黑色线
 	fill_rectangle(vram, xsize, VGA_BLACK,     60,         ysize - 24, 60,         ysize - 3);//黑色线
 	//画右边的显示时间的凹陷
-	fill_rectangle(vram, xsize, VGA_DARK_GRAY, xsize - 47, ysize - 24, xsize -  4, ysize - 24);
-	fill_rectangle(vram, xsize, VGA_DARK_GRAY, xsize - 47, ysize - 23, xsize - 47, ysize -  4);
-	fill_rectangle(vram, xsize, VGA_WHITE,     xsize - 47, ysize -  3, xsize -  4, ysize -  3);
+	fill_rectangle(vram, xsize, VGA_DARK_GRAY, xsize - 150, ysize - 24, xsize -  4, ysize - 24);
+	fill_rectangle(vram, xsize, VGA_DARK_GRAY, xsize - 150, ysize - 23, xsize - 150, ysize -  4);
+	fill_rectangle(vram, xsize, VGA_WHITE,     xsize - 150, ysize -  3, xsize -  4, ysize -  3);
 	fill_rectangle(vram, xsize, VGA_WHITE,     xsize -  3, ysize - 24, xsize -  3, ysize -  3);
 
 }
@@ -163,7 +163,7 @@ void init_palette(void)//可能我们需要重新写一下调色板，因为用bochs和virtualbox表
 	// };
 	// set_palette(0, 15, table_rgb);
 	//本来的调色板，貌似在virtualbox 和bochs不一致，我决定主动设置下
-	unsigned long i,eflags;
+	unsigned long eflags;
 	load_eflags(eflags);
 	cli();
 	outb(8, CONTROL_PORT);

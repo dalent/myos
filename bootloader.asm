@@ -94,7 +94,7 @@ ok_load_setup:
 		mov ax, SYSSEG
 		mov es, ax
 		call read_it
-		mov ax,0xfff
+		mov ax,0xff
 delay:
 		mov cx,0xffff
 setup:

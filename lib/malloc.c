@@ -73,7 +73,7 @@ void * malloc(unsigned int len)
 		{
 			retval = (void*)get_liner_pages((len >> 12) + 1);
 		}
-		printf("malloc called with large argument(%d)\n",(unsigned long)retval);
+		//printf("malloc called with large argument(%d)\n",(unsigned long)retval);
 		return retval;
 	}
 	
