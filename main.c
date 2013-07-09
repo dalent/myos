@@ -76,9 +76,9 @@ struct SHEET* open_console(struct SHTCTL *ctl)
 struct SHEET* openwindow(struct SHTCTL *ctl)
 {
 	struct SHEET* sht = sheet_alloc(ctl);
-	unsigned char *buf = (unsigned char * )malloc(160 * 68);
-	sheet_setbuf(sht, buf,160, 68, -1);
-	make_window(buf, 160, 68, "window",-1);
+	unsigned char *buf = (unsigned char * )malloc(160 * 52);
+	sheet_setbuf(sht, buf,160, 52, -1);
+	make_window(buf, 160, 52, "window",-1);
 	return sht;
 }
 extern int counter ;
@@ -87,10 +87,10 @@ void main()
 	int buf[128];
 	char buf1[20];
 	//int x=0,y=0;
-	unsigned char kbdus[128] =
+	static unsigned char kbdus[128] =
 	{
 		0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
-	  '9', '0', '-', '=', '\b',	/* Backspace */
+	  '9', '0', '-', '=', 0,	/* Backspace */
 	  '\t',			/* Tab */
 	  'q', 'w', 'e', 'r',	/* 19 */
 	  't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',	/* Enter key */
@@ -131,7 +131,7 @@ void main()
 	int mx,my;
 	struct SHTCTL *shtctl;
 	unsigned char mousebuf[256], *buf_back;
-	
+	int cursor_x, cursor_y;
 	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win;
 	struct TIMER* time,*time1;
 	fifo_init(&fifo, buf, 128);
@@ -176,7 +176,9 @@ void main()
 	//timer window
 	sht_win = openwindow(shtctl);
 	sheet_slide(sht_win, 80,72);
-	make_textbox(sht_win, 9, 29, 155, 45, VGA_WHITE);
+	make_textbox(sht_win, 8, 28, 144, 16, VGA_WHITE);
+	cursor_x = 8;
+	cursor_y = 28;
 	
 	sheet_updown(sht_back,  0);
 	//sheet_updown(sht_win, 3);
@@ -188,12 +190,14 @@ void main()
 	
 	//该时钟为了显示时间
 	time = timer_alloc();
-	timer_init(time,&fifo, 1);
+	timer_init(time,&fifo, 0);
 	timer_settime(time, 60*100);
 	
 	time1 = timer_alloc();
-	timer_init(time1,&fifo, 2);
+	timer_init(time1,&fifo, 1);
 	timer_settime(time1, 1);
+	
+	
 	sti();
 	
 	for(;;)
@@ -206,27 +210,56 @@ void main()
 		}else 
 		{
 			int data;
+			char s[4];
+			s[3] = '\0';
 			data = fifo_get(&fifo);
 			sti();
-			if(data == 1)//时间钟表
+			if(data == 0)//时间钟表
 			{
 				timer_settime(time,60*100);	
 				update_time();
 				show_time(shtctl,sht_back);
 			}
-			else if(data == 2)
+			if(data == 1)
 			{
-				timer_settime(time1,1);
-				sprintf(buf1,"%d",counter);
-				fill_rectangle(sht_win->buf,sht_win->bxsize,VGA_WHITE, 24, 28 ,100, 50);
-				draw_string(sht_win->buf, sht_win->bxsize, VGA_BLACK, 24, 28, buf1);
-				sheet_refresh(sht_win, 24, 28, 100, 50);
+				timer_init(time1,&fifo,2);
+				fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_BLACK, cursor_x, cursor_y ,cursor_x + 8, cursor_y + 16);
+				timer_settime(time1,50);
+				sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+			}
+			if(data == 2)
+			{
+				timer_init(time1,&fifo,1);
+				fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_WHITE, cursor_x, cursor_y ,cursor_x + 8, cursor_y + 16);
+				timer_settime(time1,50);
+				sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+			}
+			else if(data == 3)
+			{
+				//timer_settime(time1,1);
+				///sprintf(buf1,"%d",counter);
+				//fill_rectangle(sht_win->buf,sht_win->bxsize,VGA_WHITE, 24, 28 ,100, 50);
+				//draw_string(sht_win->buf, sht_win->bxsize, VGA_BLACK, 24, 28, buf1);
+				//sheet_refresh(sht_win, 24, 28, 100, 50);
+				//fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_BLACK, cursor_x, cursor_y ,cursor_x + 8, cursor_y + 16);
+				//sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+				
 			}
 			else if(data >= 256 && data < 512)
 			{
 				data -= 256;
-			    fill_rectangle(boot_info.vram, boot_info.scrnx,VGA_WHITE, 0, 0 ,8, 16);
-				draw_char(boot_info.vram, boot_info.scrnx, VGA_WHITE, 0, 0, kbdus[data]);
+				if(data < 0x54 && kbdus[data] != 0)
+				{
+					fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_WHITE, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+					draw_char(sht_win->buf, sht_win->bxsize, VGA_BLACK, cursor_x, cursor_y, kbdus[data]);
+					sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+					cursor_x += 8;
+				}if(data == 0x0e && cursor_x > 8)//退格键
+				{
+					fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_WHITE, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+					sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
+					cursor_x -= 8;
+				}
 			}
 			else 
 			{

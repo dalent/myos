@@ -19,7 +19,7 @@
 #define MOUSECMD_ENABLE 0xf4
 extern void mouse_interupt_asm();
 struct FIFO * mousefifo;
-unsigned int offset;
+static unsigned int offset;
 void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec)
 {
 	mousefifo = fifo;

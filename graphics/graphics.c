@@ -29,8 +29,7 @@ void draw_char8(unsigned char *vram, int xsize, char color, int posx, int posy, 
 	for(i = 0; i < 16; i++)
 	{
 		p = &vram[(posy + i) * xsize + posx];
-		if((font[i] & 0x80) != 0)
-			 p[0] = color;
+		if((font[i] & 0x80) != 0) p[0] = color;
 		if((font[i] & 0x40) != 0) p[1] = color;
 		if((font[i] & 0x20) != 0) p[2] = color;
 		if((font[i] & 0x10) != 0) p[3] = color;
@@ -170,6 +169,11 @@ void init_palette(void)//可能我们需要重新写一下调色板，因为用bochs和virtualbox表
 	outb(0x84 / 4, DATA_PORT);
 	outb(0x84 / 4, DATA_PORT);
 	outb(0x84 / 4, DATA_PORT);
+	//感觉白色也有问题
+	outb(15, CONTROL_PORT);
+	outb(0xff/ 4, DATA_PORT);
+	outb(0xff / 4, DATA_PORT);
+	outb(0xff / 4, DATA_PORT);
 	restore_eflags(eflags);
 	
 }

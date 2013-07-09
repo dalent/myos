@@ -190,12 +190,12 @@ void sheet_refreshsub(struct SHTCTL *ctl, int vx0, int vy0, int vx1, int vy1,int
 		if(x1 > sht->bxsize) x1 = sht->bxsize;
 		if(y1 > sht->bysize) y1 = sht->bysize;
 		
-		for(y = y0; y < y1; y++)
+		for(y = y0; y <= y1; y++)
 		{
 			vrambuf = &vram[(y + sht->vy0)*ctl->xsize + sht->vx0];
 			vrammap = &(ctl->map[(y + sht->vy0)*ctl->xsize + sht->vx0]);
 			buf = &sht->buf[y * sht->bxsize];
-			for(x = x0; x < x1; x++)
+			for(x = x0; x <= x1; x++)
 			{
 				c = buf[x];
 				if(vrammap[x] == sid)
