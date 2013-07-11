@@ -272,7 +272,16 @@ void main()
 					mx = (mx >= 0 ? ((mx <= boot_info.scrnx - 16) ? mx:boot_info.scrnx - 16) : 0);
 					my = (my >= 0 ? ((my <= boot_info.scrny - 16) ? my:boot_info.scrny - 16) : 0);
 					sheet_slide(sht_mouse, mx, my);
-					
+					if(mdec.mouse_dbuf[0]&0x1)
+					{
+						int vx =  sht_win->vx0 + mdec.x;
+						int vy = sht_win->vy0 + mdec.y;
+						if(vx < 0) vx = 0;
+						if(vy < 0) vy = 0;
+						if(vx > boot_info.scrnx) vx = boot_info.scrnx;
+						if(vy > boot_info.scrnx) vy = boot_info.scrny;
+						sheet_slide(sht_win,vx, vy);
+					}
 				}							
 			}
 		}

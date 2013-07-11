@@ -40,18 +40,18 @@ no_error_code:
 		push edi
 		push esi
 		push ebp
-		push fs
+		push ds
 		push es
 		push fs
+		push gs
 		push 0;error code
-		lea edx,[esp + 44]
-		push edx
 		mov dx,ss
 		mov ds,dx
 		mov es,dx
 		mov fs,dx
 		call eax
-		add esp,8
+		add esp,4
+		pop gs
 		pop fs
 		pop es
 		pop ds
@@ -112,15 +112,15 @@ error_code:
 		push ds
 		push es
 		push fs
-		push eax
-		lea eax, [esp + 44]
+		push gs
 		push eax
 		mov  ax,ss
 		mov ds,ax
 		mov es,ax
 		mov fs,ax
 		call ebx
-		add esp,8
+		add esp,4
+		pop gs
 		pop fs
 		pop es
 		pop ds

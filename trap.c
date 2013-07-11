@@ -1,6 +1,7 @@
 #include "include/head.h"
 #include "include/system.h"
 #include "include/io.h"
+#include "include/ptrace.h"
 //取得seg寄存器中addr地址的一个字节
 #define get_seg_byte(seg,addr) ({\
 register char __res;\
@@ -53,80 +54,80 @@ __res;})
 #define do_reserved                         _do_reserved
 #endif
 extern void printf(const char*fmt, ...);
-static void die(char * str, long esp_ptr, long nr)
+static void die(char * str, struct pt_regs*regs, long nr)
 {
-	printf("%s%d", str, esp_ptr);
+	printf("%sEIP: %04x:%08lx", str, 0xffff&regs->ds, regs->eip);
 	for(;;);
 }
 
-void do_double_fault(long esp, long error_code)
+void do_double_fault(long error_code,struct pt_regs*regs)
 {
-	die("double fault", esp, error_code);
+	die("double fault", regs, error_code);
 }
 
-void do_general_protection(long esp, long error_code)
+void do_general_protection(long error_code,struct pt_regs*regs)
 {
-	die("general protection", esp, error_code);
+	die("general protection", regs, error_code);
 }
-void do_divide_error(long esp, long error_code)
+void do_divide_error(long error_code,struct pt_regs*regs)
 {
-	die("divide error", esp, error_code);
+	die("divide error", regs, error_code);
 }
-void do_int3(long *esp, long error_code ,long fs, long es, long ds, long ebp, long esi, long edi, long edx, long ecx, long ebx, long eax)
+void do_int3(long error_code,struct pt_regs*regs)
 {
-	
-}
-
-void do_nmi(long esp, long error_code)
-{
-	die("nmi", esp, error_code);
+	die("int3", regs, error_code);
 }
 
-void do_debug(long esp, long error_code)
+void do_nmi(long error_code,struct pt_regs*regs)
 {
-	die("debug",esp, error_code);
-}
-void do_overflow(long esp, long error_code)
-{
-	die("debug", esp, error_code);
-}
-void do_bounds(long esp, long error_code)
-{
-	die("bounds", esp, error_code);
-}
-void do_invalid_op(long esp, long error_code)
-{
-	die("invalid operand", esp, error_code);
+	die("nmi", regs, error_code);
 }
 
-void do_device_not_available(long esp, long error_code)
+void do_debug(long error_code,struct pt_regs*regs)
 {
-	die("device  not available", esp, error_code);
+	die("debug",regs, error_code);
 }
-void do_coprocessor_segment_overrun(long esp, long error_code)
+void do_overflow(long error_code,struct pt_regs*regs)
 {
-	die("coprocessor segment overrun", esp, error_code);
+	die("debug", regs, error_code);
 }
-void do_invalid_TSS(long esp, long error_code)
+void do_bounds(long error_code,struct pt_regs*regs)
 {
-	die("invalid TSS", esp, error_code);
+	die("bounds", regs, error_code);
 }
-void do_segment_not_present(long esp, long error_code)
+void do_invalid_op(long error_code,struct pt_regs*regs)
 {
-	die("segment not present", esp, error_code);
-}
-void do_stack_segment(long esp, long error_code)
-{
-	die("stack segment", esp, error_code);
-}
-void do_coprocessor_rror(long esp, long error_code)
-{
-	die("coprocessor error",esp, error_code);
+	die("invalid operand", regs, error_code);
 }
 
-void do_reserved(long esp, long error_code)
+void do_device_not_available(long error_code,struct pt_regs*regs)
 {
-	die("reserved", esp ,error_code);
+	die("device  not available", regs, error_code);
+}
+void do_coprocessor_segment_overrun(long error_code,struct pt_regs*regs)
+{
+	die("coprocessor segment overrun", regs, error_code);
+}
+void do_invalid_TSS(long error_code,struct pt_regs*regs)
+{
+	die("invalid TSS", regs, error_code);
+}
+void do_segment_not_present(long error_code,struct pt_regs*regs)
+{
+	die("segment not present", regs, error_code);
+}
+void do_stack_segment(long error_code,struct pt_regs*regs)
+{
+	die("stack segment", regs, error_code);
+}
+void do_coprocessor_rror(long error_code,struct pt_regs*regs)
+{
+	die("coprocessor error",regs, error_code);
+}
+
+void do_reserved(long error_code,struct pt_regs*regs)
+{
+	die("reserved", regs ,error_code);
 }
 #ifdef DJGPP                           //windows djgpp
 #define divide_error         divide_error 
