@@ -99,7 +99,7 @@ f1:		jmp f2
 f2:		out 0xa0,al
 		pop eax
 		jmp no_error_code
-_double_fault:
+_double_fault:;系统响应迟钝或者其他的硬件错误
 		push _do_double_fault
 error_code:
 		xchg eax, [esp + 4]
@@ -113,13 +113,13 @@ error_code:
 		push es
 		push fs
 		push gs
-		push eax
+		push eax ;压入的是上边交换[esp+4]的数据也就是错误代码
 		mov  ax,ss
 		mov ds,ax
 		mov es,ax
 		mov fs,ax
 		call ebx
-		add esp,4
+		add esp,4;函数调用后我们必须手动的把函数栈清空
 		pop gs
 		pop fs
 		pop es

@@ -56,7 +56,7 @@ __res;})
 extern void printf(const char*fmt, ...);
 static void die(char * str, struct pt_regs*regs, long nr)
 {
-	printf("%sEIP: %04x:%08lx", str, 0xffff&regs->ds, regs->eip);
+	printf("%sEIP: %04x:%08lx error_code: %d", str, 0xffff&regs->ds, regs->eip, nr);
 	for(;;);
 }
 

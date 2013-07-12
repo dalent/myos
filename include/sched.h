@@ -1,7 +1,7 @@
 #ifndef __SCHED_H__
 #define __SCHED_H__
 struct tss_struct {
-	unsigned short	back_link,__blh;
+	unsigned short	back_link,__blh;//This is a 16-bit selector which allows linking this TSS with the previous one.
 	unsigned long	esp0;
 	unsigned short	ss0,__ss0h;
 	unsigned long	esp1;
@@ -23,6 +23,6 @@ struct tss_struct {
 	unsigned short	fs, __fsh;
 	unsigned short	gs, __gsh;
 	unsigned short	ldt, __ldth;
-	unsigned short	trace, bitmap;
+	unsigned short	trace, iomap;
 	};
 #endif

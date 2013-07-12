@@ -50,12 +50,14 @@ del *.o
 
 cd ..\%bin_path%
 del /Q *.bin
-nasm -o bootloader.bin ..\bootloader.asm
+cd ..
+nasm -o bootloader.bin bootloader.asm
 
-nasm -o setup.bin ..\setup.asm
-nasm  -f aout -o head.o ..\head.asm
-nasm  -f aout -o asm.o ..\asm.asm
-
+nasm -o setup.bin setup.asm
+nasm  -f aout -o head.o head.asm
+nasm  -f aout -o asm.o asm.asm
+copy *.o .\%bin_path%\
+cd %bin_path%
 ld -T ..\link.ld -Map map.txt -o kernel %object%
 del /Q *.o
 

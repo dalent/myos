@@ -6,6 +6,9 @@ global pg0;
 global _pg_dir
 global setup_paging
 global _characters
+global _gdt
+global _gdt_descr
+NR_TASKS EQU 128
 _pg_dir:;0x0000
 startup_32:
 
@@ -129,6 +132,18 @@ idt_descr:
 alignb 8
 _idt:
 		times 256 * 8 db 0 ;256项每项8byte
+alignb 4
+dw 0
+_gdt_descr:
+	dw (3 + 2*NR_TASKS)*8 - 1
+	dd gdt
+alignb 4
+_gdt:
+	RESB	8	
+	DW		0xffff,0x0000,0x9a00,0x00cf	; 可执行		; 
+	DW		0xffff,0x0000,0x9200,0x00cf	; 数据
+	times (NR_TASKS*2 * 8) db 0
+
 section .text	
 		times 4096 db 0
 _sys_stack:

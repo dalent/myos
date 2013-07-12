@@ -13,6 +13,7 @@
 #include "./include/sheet.h"
 #include "./include/stdlib.h"
 #include "./include/kernel.h"
+#include "./include/sched.h"
 struct BOOT_INFO
 {
 	char led,vmode;
@@ -86,6 +87,7 @@ void main()
 {
 	int buf[128];
 	char buf1[20];
+	struct tss_struct tss_a, tss_b;
 	//int x=0,y=0;
 	static unsigned char kbdus[128] =
 	{
@@ -274,13 +276,13 @@ void main()
 					sheet_slide(sht_mouse, mx, my);
 					if(mdec.mouse_dbuf[0]&0x1)
 					{
-						int vx =  sht_win->vx0 + mdec.x;
-						int vy = sht_win->vy0 + mdec.y;
-						if(vx < 0) vx = 0;
-						if(vy < 0) vy = 0;
-						if(vx > boot_info.scrnx) vx = boot_info.scrnx;
-						if(vy > boot_info.scrnx) vy = boot_info.scrny;
-						sheet_slide(sht_win,vx, vy);
+						// int vx =  sht_win->vx0 + mdec.x;
+						// int vy = sht_win->vy0 + mdec.y;
+						// if(vx < 0) vx = 0;
+						// if(vy < 0) vy = 0;
+						// if(vx > boot_info.scrnx) vx = boot_info.scrnx;
+						// if(vy > boot_info.scrnx) vy = boot_info.scrny;
+						sheet_slide(sht_win,mx, my);
 					}
 				}							
 			}
