@@ -5,7 +5,8 @@ set idt=.\..\idt
 set vga=.\..\graphics
 set char=.\..\char
 set std=.\..\std
-set object=head.o m.o me.o asm.o t.o m2.o g.o pic.o ti.o k1.o kb.o  fifo.o m1.o c.o v.o s.o w.o 
+set gdt=.\..\gdt
+set object=head.o m.o me.o asm.o t.o m2.o g.o pic.o ti.o k1.o kb.o  f.o m1.o c.o v.o s.o w.o g1.o 
 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
@@ -44,7 +45,12 @@ copy *.o .\..\%bin_path%\
 del *.o
 
 cd %std%
-gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o fifo.o fifo.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o f.o fifo.c
+copy *.o .\..\%bin_path%\ 
+del *.o
+
+cd %gdt%
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o g1.o gdt.c
 copy *.o .\..\%bin_path%\ 
 del *.o
 
@@ -57,6 +63,9 @@ nasm -o setup.bin setup.asm
 nasm  -f aout -o head.o head.asm
 nasm  -f aout -o asm.o asm.asm
 copy *.o .\%bin_path%\
+copy *.bin .\%bin_path%\
+del /Q *.o
+del /Q *.bin
 cd %bin_path%
 ld -T ..\link.ld -Map map.txt -o kernel %object%
 del /Q *.o

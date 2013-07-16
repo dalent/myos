@@ -14,6 +14,9 @@
 #include "./include/stdlib.h"
 #include "./include/kernel.h"
 #include "./include/sched.h"
+#include "./include/gdt.h"
+#define load_tr(a) {__asm__ __votalite__("ltr %%eax"::"a"(a):);}
+
 struct BOOT_INFO
 {
 	char led,vmode;
@@ -83,6 +86,31 @@ struct SHEET* openwindow(struct SHTCTL *ctl)
 	return sht;
 }
 extern int counter ;
+void task_b_main()
+{
+	printf("hahhhhhhhhhhhhhhhhhhhhhhhhhhhhhh!");
+	for(;;);
+}
+
+void tss_change(struct tss_struct* tss, int esp)
+{
+	tss->eip =(int)&task_b_main;
+	tss->eflags = 0x202;
+	tss->eax = 0;
+	tss->ecx = 0;
+	tss->edx = 0;
+	tss->ebx = 0;
+	tss->esp = esp;
+	tss->ebp = 0;
+	tss->esi = 0;
+	tss->edi = 0;
+	tss->es = 2*8;
+	tss->cs = 1* 8;
+	tss->ss = 2*8;
+	tss->ds = 2 *8;
+	tss->fs = 2*8;
+	tss->gs = 2*8;
+}
 void main()
 {
 	int buf[128];
@@ -193,12 +221,16 @@ void main()
 	//该时钟为了显示时间
 	time = timer_alloc();
 	timer_init(time,&fifo, 0);
-	timer_settime(time, 60*100);
+	timer_settime(time, 1000);//60*100);
 	
 	time1 = timer_alloc();
 	timer_init(time1,&fifo, 1);
 	timer_settime(time1, 1);
 	
+	tss_b.iomap = sizeof tss_b;
+	tss_b.ldt = 0;
+	set_segmdesc(3, sizeof tss_b, (int)&tss_b, 0x89,0x40);
+	tss_change(&tss_b, (int)malloc(1024)+1023);
 	
 	sti();
 	
@@ -218,9 +250,11 @@ void main()
 			sti();
 			if(data == 0)//时间钟表
 			{
-				timer_settime(time,60*100);	
-				update_time();
-				show_time(shtctl,sht_back);
+				// timer_settime(time,60*100);	
+				// update_time();
+				// show_time(shtctl,sht_back);
+				task_switch();
+				
 			}
 			if(data == 1)
 			{
@@ -347,5 +381,7 @@ void show_time(struct SHTCTL* ctl,struct SHEET*sht)
 	draw_string(sht->buf,sht->bxsize,VGA_BLACK, sht->bxsize-140, sht->bysize - 20, tm);
 	sheet_refresh(sht,sht->bxsize-140,sht->bysize - 20, sht->bxsize, sht->bysize - 4);
 }
+
+
 
 

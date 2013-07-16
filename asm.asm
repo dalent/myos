@@ -144,7 +144,10 @@ _stack_segment:;int12 堆栈段错误
 _general_protection:;int13 一般保护性出错
 		push _do_general_protection
 		jmp error_code
-
+global _task_switch
+_task_switch:
+	jmp dword 3*8:0
+	ret
 
 
 		

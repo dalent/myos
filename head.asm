@@ -8,7 +8,7 @@ global setup_paging
 global _characters
 global _gdt
 global _gdt_descr
-NR_TASKS EQU 128
+NR_TASKS EQU 20
 _pg_dir:;0x0000
 startup_32:
 
@@ -25,6 +25,7 @@ testA20:inc eax
 		cmp eax, dword[0x100000]
 		je testA20
 		mov esp, _sys_stack
+		call setup_gdt;
 		call setup_idt;
 		jmp after_page_tables
 size equ $ - _pg_dir
@@ -61,6 +62,9 @@ rp_sidt:
 		dec ecx
 		jne rp_sidt
 		lidt [idt_descr]
+		ret
+setup_gdt:
+		lgdt [_gdt_descr]
 		ret
 		
 
@@ -136,7 +140,7 @@ alignb 4
 dw 0
 _gdt_descr:
 	dw (3 + 2*NR_TASKS)*8 - 1
-	dd gdt
+	dd _gdt
 alignb 4
 _gdt:
 	RESB	8	

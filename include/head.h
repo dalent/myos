@@ -4,7 +4,6 @@
 typedef struct desc_struct{
 	unsigned long a,b;
 }desc_table[256];
- unsigned long pg_dir[1024];
  #ifdef DJGPP
  #define idt idt
  #define gdt gdt
@@ -13,5 +12,5 @@ typedef struct desc_struct{
   #define gdt _gdt
  #endif
 
-extern desc_table idt,gdt;
+extern desc_table idt;
 #endif
