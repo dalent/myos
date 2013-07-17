@@ -1,6 +1,7 @@
 #include "./../include/gdt.h"
 //we can all define the struct gdt_struct and the hold here .but about linux 0.11 if define macro. so for now i don't want
 //define all the function about install gdt here.
+//we defined the gdt table in the head.asm
 void set_segmdesc(int num,unsigned long limit, unsigned long  base, unsigned char access , unsigned gran)
 {
 	gdt[num].base_low = (base & 0xffff);

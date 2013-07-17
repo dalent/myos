@@ -15,7 +15,6 @@
 #include "./include/kernel.h"
 #include "./include/sched.h"
 #include "./include/gdt.h"
-#define load_tr(a) {__asm__ __votalite__("ltr %%eax"::"a"(a):);}
 
 struct BOOT_INFO
 {
@@ -88,8 +87,35 @@ struct SHEET* openwindow(struct SHTCTL *ctl)
 extern int counter ;
 void task_b_main()
 {
-	printf("hahhhhhhhhhhhhhhhhhhhhhhhhhhhhhh!");
-	for(;;);
+	struct FIFO fifo1;
+	int i, fifobuf[128];
+	struct TIMER* time;
+	fifo_init(&fifo1, fifobuf, 128);
+	time = timer_alloc();
+	timer_init(time,&fifo1, 1);
+	timer_settime(time, 500);
+	for(;;)
+	{
+		cli();
+		if(fifo_status(&fifo)  == 0)
+		{	
+		//sti();
+			stihlt();
+		}else 
+		{
+			int data;
+			data = fifo_get(&fifo);
+			sti();
+			if(data == 1)//时间钟表
+			{
+				timer_settime(time,500);	
+				// update_time();
+				// show_time(shtctl,sht_back);
+				farjmp(0, 4*8);
+				
+			}
+		}
+	}
 }
 
 void tss_change(struct tss_struct* tss, int esp)
@@ -228,9 +254,13 @@ void main()
 	timer_settime(time1, 1);
 	
 	tss_b.iomap = sizeof tss_b;
+	tss_a.iomap = sizeof tss_a;
+	tss_a.ldt = 0;
 	tss_b.ldt = 0;
-	set_segmdesc(3, sizeof tss_b, (int)&tss_b, 0x89,0x40);
+	set_segmdesc(4, sizeof tss_a, (int)&tss_a, 0x89, 0x40);
+	set_segmdesc(3, sizeof tss_b, (int)&tss_b, 0x89, 0x40);
 	tss_change(&tss_b, (int)malloc(1024)+1023);
+	load_tr(4*8);
 	
 	sti();
 	
@@ -250,10 +280,10 @@ void main()
 			sti();
 			if(data == 0)//时间钟表
 			{
-				// timer_settime(time,60*100);	
+				 timer_settime(time,60*100);	
 				// update_time();
 				// show_time(shtctl,sht_back);
-				task_switch();
+				farjmp();
 				
 			}
 			if(data == 1)

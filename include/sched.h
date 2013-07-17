@@ -1,5 +1,8 @@
 #ifndef __SCHED_H__
 #define __SCHED_H__
+//加载tr，第一次加载表示当前的运行程序。
+#define load_tr(a) \
+__asm__ __volatile__("ltr %%ax"::"a"(32):"1")
 struct tss_struct {
 	unsigned short	back_link,__blh;//This is a 16-bit selector which allows linking this TSS with the previous one.
 	unsigned long	esp0;
@@ -25,4 +28,6 @@ struct tss_struct {
 	unsigned short	ldt, __ldth;
 	unsigned short	trace, iomap;
 	};
+//任务切换的功能eip 没有用 cs才是目的的地址
+extern farjmp(int eip, int cs);
 #endif
