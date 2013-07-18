@@ -1,12 +1,14 @@
 #include "./../include/fifo.h"
+#include "./../include/sched.h"
 #define OVER_FLOW 0x1
-void fifo_init(struct FIFO * fifo, int * buf, int size)//初始化
+void fifo_init(struct FIFO * fifo, int * buf, int size, struct TASK*task)//初始化
 {
 	fifo->buf = buf;
 	fifo->size = size;
 	fifo->cur = 0;
 	fifo->p = 0;
 	fifo->free = size;
+	fifo->task = task;//有数据写入的时候我们唤醒任务
 }
 
 int fifo_put(struct FIFO *fifo, int ch)//存放数据
@@ -19,6 +21,14 @@ int fifo_put(struct FIFO *fifo, int ch)//存放数据
 	fifo->buf[fifo->p] = ch;
 	fifo->p = (++(fifo->p)) % fifo->size;
 	--fifo->free;
+	
+	if(fifo->task != 0)
+	{
+		if(fifo->task->flags != 2)
+		{
+			task_run(fifo->task);//唤醒任务。
+		}
+	}
 	return 0;
 }
 

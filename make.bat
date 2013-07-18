@@ -6,7 +6,8 @@ set vga=.\..\graphics
 set char=.\..\char
 set std=.\..\std
 set gdt=.\..\gdt
-set object=head.o m.o me.o asm.o t.o m2.o g.o pic.o ti.o k1.o kb.o  f.o m1.o c.o v.o s.o w.o g1.o 
+set task=.\..\task
+set object=h.o m.o me.o a.o t.o m2.o g.o pic.o ti.o k1.o kb.o  f.o m1.o c.o v.o s.o w.o g1.o s1.o
 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
@@ -53,15 +54,18 @@ cd %gdt%
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o g1.o gdt.c
 copy *.o .\..\%bin_path%\ 
 del *.o
-
+cd %task%
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o s1.o sched.c
+copy *.o .\..\%bin_path%\ 
+del *.o
 cd ..\%bin_path%
 del /Q *.bin
 cd ..
 nasm -o bootloader.bin bootloader.asm
 
 nasm -o setup.bin setup.asm
-nasm  -f aout -o head.o head.asm
-nasm  -f aout -o asm.o asm.asm
+nasm  -f aout -o h.o head.asm
+nasm  -f aout -o a.o asm.asm
 copy *.o .\%bin_path%\
 copy *.bin .\%bin_path%\
 del /Q *.o

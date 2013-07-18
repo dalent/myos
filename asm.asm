@@ -144,10 +144,11 @@ _stack_segment:;int12 堆栈段错误
 _general_protection:;int13 一般保护性出错
 		push _do_general_protection
 		jmp error_code
-;void farjmp(int eip, int cs)
+;void farjmp(int eip, int cs)//esp put the eip when the ret it push back the eip 
 global _farjmp
 _farjmp:
 	jmp far [esp+4] 
+	ret
 
 
 

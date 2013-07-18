@@ -4,7 +4,7 @@
 #include "./../include/VGA.h"
 #include "./../include/sheet.h"
 #include "./../include/stdlib.h"
-void write_str2window(struct SHTCTL *ctl, struct SHEET*sht, int x, int y, int c, int b, char *s, int l)//b black color,l, length
+void write_str2window(struct SHEET*sht, int x, int y, int c, int b, char *s, int l)//b black color,l, length
 {
 	fill_rectangle(sht->buf, sht->bxsize, b, x, y,  x + l * 8, y + 15);
 	draw_string   (sht->buf, sht->bxsize, c, x, y, 	s);

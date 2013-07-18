@@ -60,7 +60,7 @@ static void time_init(void)
 	BCD_TO_BIN(time.tm_year);
 }
 void memory_set();
-struct FIFO fifo;
+
 
 struct SHEET* open_console(struct SHTCTL *ctl)
 {
@@ -85,48 +85,48 @@ struct SHEET* openwindow(struct SHTCTL *ctl)
 	return sht;
 }
 extern int counter ;
-void task_b_main()
+void task_b_main(struct SHEET* sht_back)
 {
 	struct FIFO fifo1;
 	int i, fifobuf[128];
-	struct TIMER* time;
-	fifo_init(&fifo1, fifobuf, 128);
-	time = timer_alloc();
-	timer_init(time,&fifo1, 1);
-	timer_settime(time, 500);
+	struct TIMER *time1;
+	int count = 0;
+	char s[11];
+	fifo_init(&fifo1, fifobuf, 128,0);
+	time1 = timer_alloc();
+	timer_init(time1, &fifo1, 1);
+	timer_settime(time1, 1);
 	for(;;)
 	{
+		count++;
+		sprintf(s,"%d",count);
+		
 		cli();
-		if(fifo_status(&fifo)  == 0)
+		if(fifo_status(&fifo1)  == 0)
 		{	
 		//sti();
 			stihlt();
 		}else 
 		{
 			int data;
-			data = fifo_get(&fifo);
+			data = fifo_get(&fifo1);
 			sti();
-			if(data == 1)//时间钟表
+			if(data == 1)
 			{
-				timer_settime(time,500);	
-				// update_time();
-				// show_time(shtctl,sht_back);
-				farjmp(0, 4*8);
-				
+				write_str2window(sht_back,0, 144, VGA_BLACK,VGA_WHITE,s,10);
+				timer_settime(time1,1);
 			}
 		}
 	}
 }
 
-void tss_change(struct tss_struct* tss, int esp)
+void tss_change(struct tss_struct* tss)
 {
-	tss->eip =(int)&task_b_main;
 	tss->eflags = 0x202;
 	tss->eax = 0;
 	tss->ecx = 0;
 	tss->edx = 0;
 	tss->ebx = 0;
-	tss->esp = esp;
 	tss->ebp = 0;
 	tss->esi = 0;
 	tss->edi = 0;
@@ -141,7 +141,8 @@ void main()
 {
 	int buf[128];
 	char buf1[20];
-	struct tss_struct tss_a, tss_b;
+	struct TASK* tss_a, *tss_b;
+	struct FIFO fifo;
 	//int x=0,y=0;
 	static unsigned char kbdus[128] =
 	{
@@ -189,8 +190,8 @@ void main()
 	unsigned char mousebuf[256], *buf_back;
 	int cursor_x, cursor_y;
 	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win;
-	struct TIMER* time,*time1;
-	fifo_init(&fifo, buf, 128);
+	struct TIMER* time,*time1,*time2;
+	fifo_init(&fifo, buf, 128,0);
 	//控制内存
 	memory_set();
 	//初始化各种中断
@@ -252,15 +253,14 @@ void main()
 	time1 = timer_alloc();
 	timer_init(time1,&fifo, 1);
 	timer_settime(time1, 1);
-	
-	tss_b.iomap = sizeof tss_b;
-	tss_a.iomap = sizeof tss_a;
-	tss_a.ldt = 0;
-	tss_b.ldt = 0;
-	set_segmdesc(4, sizeof tss_a, (int)&tss_a, 0x89, 0x40);
-	set_segmdesc(3, sizeof tss_b, (int)&tss_b, 0x89, 0x40);
-	tss_change(&tss_b, (int)malloc(1024)+1023);
-	load_tr(4*8);
+
+	tss_a =task_init();
+	tss_b = task_alloc();
+	tss_b->tss.eip = &task_b_main;
+	tss_b->tss.esp = (int)malloc(1024) - 8;
+	*((int*)((char*)tss_b->tss.esp + 4)) = (int)sht_back;
+	tss_change(&tss_b->tss);
+	task_run(tss_b);
 	
 	sti();
 	
@@ -281,9 +281,8 @@ void main()
 			if(data == 0)//时间钟表
 			{
 				 timer_settime(time,60*100);	
-				// update_time();
-				// show_time(shtctl,sht_back);
-				farjmp();
+				 update_time();
+				 show_time(shtctl,sht_back);
 				
 			}
 			if(data == 1)
@@ -293,6 +292,7 @@ void main()
 				timer_settime(time1,50);
 				sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
 			}
+
 			if(data == 2)
 			{
 				timer_init(time1,&fifo,1);
@@ -340,12 +340,6 @@ void main()
 					sheet_slide(sht_mouse, mx, my);
 					if(mdec.mouse_dbuf[0]&0x1)
 					{
-						// int vx =  sht_win->vx0 + mdec.x;
-						// int vy = sht_win->vy0 + mdec.y;
-						// if(vx < 0) vx = 0;
-						// if(vy < 0) vy = 0;
-						// if(vx > boot_info.scrnx) vx = boot_info.scrnx;
-						// if(vy > boot_info.scrnx) vy = boot_info.scrny;
 						sheet_slide(sht_win,mx, my);
 					}
 				}							
@@ -398,9 +392,6 @@ void update_time()
 			time.tm_mday++;//我们这里就先不更新月份啦，因为更新月份考虑年份关系，后边再说
 		}
 	}
-	
-
-
 }
 void show_time(struct SHTCTL* ctl,struct SHEET*sht)
 {

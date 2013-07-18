@@ -36,8 +36,12 @@ extern void copy_rectangle(unsigned char *vram, int xsize, int srcx, int srcy, i
 extern void draw_string(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
 extern void init_mouse_cursor(unsigned char *mouse, char bc);
 extern void init_screen(unsigned char *vram, int xsize, int ysize);
-extern void make_window(unsigned char *buf, int xsize, int ysize , char* title, char act);
-extern void make_textbox(struct SHEET *sht, int x0, int y0, int sx, int sy, int c);
+
 extern void draw_char(unsigned char *vram, int xsize, char color, int posx, int posy, char s);
 extern void init_palette(void);
+//window.h
+extern void write_str2window(struct SHEET*sht, int x, int y, int c, int b, char *s, int l);
+extern void make_title(unsigned char * buf, int xsize, char *title, char act);
+extern void make_window(unsigned char *buf, int xsize, int ysize , char* title, char act);
+void make_textbox(struct SHEET *sht, int x0, int y0, int sx,/*¿í¶È*/ int sy,/*¸ß¶È*/ int c);
 #endif
