@@ -1,7 +1,7 @@
 binary_src=bootloader.bin setup.bin
 kernel=kernel
 aout_obj=head.o main.o
-lib    = mm/mm.a lib/lib.a graphics/graphics.a idt/idt.a char/char.a std/std.a
+lib    = mm/mm.a lib/lib.a graphics/graphics.a idt/idt.a char/char.a std/std.a task/task.a
 dir_fold=./linux_bin
 cc = gcc
 nasm =nasm
@@ -12,7 +12,7 @@ CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer \
 all:$(binary_src) $(kernel)
 $(binary_src): %.bin : %.asm
 	$(nasm) -o $(dir_fold)/$@ $<
-$(kernel):head.o main.o asm.o trap.o graphics/graphics.a lib/lib.a idt/idt.a char/char.a std/std.a mm/mm.a gdt/gdt.a
+$(kernel):head.o main.o trap.o graphics/graphics.a lib/lib.a idt/idt.a char/char.a std/std.a mm/mm.a task/task.a gdt/gdt.a asm.o
 	rm -f $(dir_fold)/$@
 	-ld -T link.ld -Map $(dir_fold)/map -o $(dir_fold)/$@ $^
 	rm -f *.o
@@ -37,6 +37,8 @@ std/std.a:
 	(cd std;make)
 gdt/gdt.a:
 	(cd gdt;make)
+task/task.a:
+	(cd task;make)
 clean:
 	cd $(dir_fold);rm -rf *.bin *.o kernel *.img
 
