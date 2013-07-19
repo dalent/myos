@@ -14,6 +14,7 @@
 #include "./../include/time.h"
 #include "./../include/char.h"
 #include "./../include/fifo.h"
+#include "./../include/sched.h"
 /*web :http://wiki.osdev.org/Programmable_Interval_Timer
 Bits         Usage
  6 and 7      Select channel :
@@ -40,9 +41,11 @@ Bits         Usage
 extern void time_interrupt_asm();
 unsigned long volatile counter;
 static struct TIMECTL timerctl;//定时器控制器
+extern struct TIMER*task_timer;//此任务为进程切换时间
 void do_time_interrupt()
 {
 	int i;
+	char ts = 0;
 	struct TIMER*timer;
 	PIC_sendEOI(0);
 	counter++;
@@ -57,12 +60,19 @@ void do_time_interrupt()
 		if(timer->expire > counter)
 		{break;}
 		timer->flag = TIMER_FLAGS_ALLOC;
-		fifo_put(timer->fifo, timer->data);
+		if(timer != task_timer)
+			fifo_put(timer->fifo, timer->data);
+		else
+			ts = 1;
 		timer = timer->next;
 	}	
 	
 	timerctl.t0 = timer;
 	timerctl.min_expire = timer->expire;
+	if(ts != 0)
+	{
+		task_switch();
+	}
 }
 
 //初始化定时器

@@ -39,6 +39,7 @@ extern void init_screen(unsigned char *vram, int xsize, int ysize);
 
 extern void draw_char(unsigned char *vram, int xsize, char color, int posx, int posy, char s);
 extern void init_palette(void);
+inline void draw_string_print(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
 //window.h
 extern void write_str2window(struct SHEET*sht, int x, int y, int c, int b, char *s, int l);
 extern void make_title(unsigned char * buf, int xsize, char *title, char act);

@@ -26,11 +26,7 @@ struct BOOT_INFO
 extern void mem_init(long start, long end);
 extern void trap_init();
 extern void init_pic();
-extern void init_keyboard(struct FIFO * fifo,unsigned int data) ;
-extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
-extern void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec);
-extern int sprintf(char * buf, const char *fmt, ...);
-extern void printf(const char*fmt, ...);
+void show_time(struct SHTCTL* ctl,struct SHEET*sht);
 extern void update_time();
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
@@ -113,7 +109,7 @@ void task_b_main(struct SHEET* sht_back)
 			sti();
 			if(data == 1)
 			{
-				write_str2window(sht_back,0, 144, VGA_BLACK,VGA_WHITE,s,10);
+				write_str2window(sht_back,24, 28, VGA_BLACK,VGA_WHITE,s,10);
 				timer_settime(time1,1);
 			}
 		}
@@ -122,14 +118,6 @@ void task_b_main(struct SHEET* sht_back)
 
 void tss_change(struct tss_struct* tss)
 {
-	tss->eflags = 0x202;
-	tss->eax = 0;
-	tss->ecx = 0;
-	tss->edx = 0;
-	tss->ebx = 0;
-	tss->ebp = 0;
-	tss->esi = 0;
-	tss->edi = 0;
 	tss->es = 2*8;
 	tss->cs = 1* 8;
 	tss->ss = 2*8;
@@ -141,7 +129,7 @@ void main()
 {
 	int buf[128];
 	char buf1[20];
-	struct TASK* tss_a, *tss_b;
+	struct TASK* tss_a, *tss_b[3];
 	struct FIFO fifo;
 	//int x=0,y=0;
 	static unsigned char kbdus[128] =
@@ -185,12 +173,14 @@ void main()
 	};
 	
 	struct MOUSE_DEC mdec = {0};
-	int mx,my;
+	int mx,my,i;
 	struct SHTCTL *shtctl;
 	unsigned char mousebuf[256], *buf_back;
 	int cursor_x, cursor_y;
-	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win;
+	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win,*sht_win_b[3];
 	struct TIMER* time,*time1,*time2;
+	char s[10];
+	unsigned char * buf_win_b;
 	fifo_init(&fifo, buf, 128,0);
 	//控制内存
 	memory_set();
@@ -237,11 +227,39 @@ void main()
 	cursor_x = 8;
 	cursor_y = 28;
 	
+	
+
+	
+	tss_a =task_init();
+	for(i = 0; i< 3; i++)
+	{
+	
+		sht_win_b[i] = sheet_alloc(shtctl);
+		buf_win_b = (unsigned char*)malloc(144*52);
+		sheet_setbuf(sht_win_b[i], buf_win_b, 144,52,-1);
+		sprintf(s, "task_b%d", i);
+		make_window(buf_win_b, 144, 52, s, 0);
+		tss_b[i] = task_alloc();
+		tss_b[i]->tss.eip = &task_b_main;
+		tss_b[i]->tss.esp = (int)malloc(1024) - 8;
+		*((int*)((char*)tss_b[i]->tss.esp + 4)) = (int)sht_win_b[i];
+		tss_change(&tss_b[i]->tss);
+		task_run(tss_b[i]);
+	}
+	
+	sheet_slide(sht_win_b[0], 168,56);
+	sheet_slide(sht_win_b[1], 8,116);
+	sheet_slide(sht_win_b[2], 168,116);
 	sheet_updown(sht_back,  0);
 	//sheet_updown(sht_win, 3);
 	sheet_updown(sht_cons, 1);
-	sheet_updown(sht_mouse, 3);
-	sheet_updown(sht_win, 2);
+	
+	sheet_updown(sht_win_b[0], 2);
+	sheet_updown(sht_win_b[1], 3);
+	sheet_updown(sht_win_b[2], 4);
+	sheet_updown(sht_win, 5);
+	sheet_updown(sht_mouse, 6);
+	
 	
 	show_time(shtctl,sht_back);
 	
@@ -253,15 +271,6 @@ void main()
 	time1 = timer_alloc();
 	timer_init(time1,&fifo, 1);
 	timer_settime(time1, 1);
-
-	tss_a =task_init();
-	tss_b = task_alloc();
-	tss_b->tss.eip = &task_b_main;
-	tss_b->tss.esp = (int)malloc(1024) - 8;
-	*((int*)((char*)tss_b->tss.esp + 4)) = (int)sht_back;
-	tss_change(&tss_b->tss);
-	task_run(tss_b);
-	
 	sti();
 	
 	for(;;)
@@ -370,7 +379,6 @@ void memory_set()
 }
 #include "./include/stdarg.h"
 extern int vsprintf(char *buf, const char *fmt, va_list args);
- extern void draw_string_print(unsigned char* vram, int xsize, char color, int posx, int posy, char*str);
 void printf(const char*fmt, ...)
 {
 	char buf[100];

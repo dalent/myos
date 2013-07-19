@@ -30,7 +30,7 @@ struct tss_struct {
 	unsigned short	trace, iomap;
 	};
 //任务切换的功能eip 没有用 cs才是目的的段寄存器
-#ifndef DjGPP
+#ifndef DJGPP
 #define farjmp _farjmp
 #endif
 extern void farjmp(int eip, int cs);

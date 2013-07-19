@@ -21,4 +21,5 @@ struct MOUSE_DEC
 struct FIFO;
 extern int mousedecode(struct MOUSE_DEC* mdec, unsigned char dat);
 extern void init_mouse(struct FIFO * fifo, int data0, struct MOUSE_DEC* dec);
+extern void init_keyboard(struct FIFO * fifo,unsigned int data) ;
 #endif
