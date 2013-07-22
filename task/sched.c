@@ -5,6 +5,53 @@
 #include "./../include/gdt.h"
 struct TASKCTL *taskctl;
 struct TIMER* task_timer;
+static struct TASK* task_now()
+{
+	struct TASKLEVEL * tl;
+	tl = &taskctl->level[taskctl->now_lv];
+	return tl->tasks[tl->now];
+}
+
+static void task_add(struct TASK*task)
+{
+	struct TASKLEVEL* tl = &taskctl->level[task->level];
+	tl->tasks[tl->running++] = task;
+	task->flags = 2;
+}
+
+static void task_remove(struct TASK*task)
+{
+	int i;
+	struct TASKLEVEL* tl = &taskctl->level[task->level];
+	for(i = 0; i < tl->running; i++)//在该task所在的层中寻找相应的任务
+	{
+		if(task == tl->tasks[i])
+			break;
+	}
+	
+	tl->running--;
+	if(i < tl->now)
+		tl->now--;
+	task->flags = 1;//休眠
+	
+	//移动
+	for(; i < tl->running; i++)
+	{
+		tl->tasks[i] = tl->tasks[i+1];
+	}
+	
+}
+
+static void task_switchsub()
+{
+	int i;
+	//寻找最上层的level
+	for(i=0;i < MAX_TASKLEVELS; i++)
+		if(taskctl->level[i].running > 0)
+		 break;
+	taskctl->now_lv = i;
+	taskctl->lv_change = 0;
+}
 struct TASK* task_init()
 {
 	int i;
@@ -16,17 +63,23 @@ struct TASK* task_init()
 		taskctl->tasks0[i].sel = (TASK_GDT0 + i) * 8;
 		set_segmdesc(TASK_GDT0+i,sizeof(struct tss_struct), (int)&taskctl->tasks0[i].tss, 0x89, 0x40);
 	}
+	for(i = 0; i < MAX_TASKLEVELS; i++)
+	{
+		taskctl->level[i].now = 0;
+		taskctl->level[i].running = 0;
+	}
 	//内核初始进程占据第一个
 	task = task_alloc();
 	task->flags = 2;
-	taskctl->running = 1;
-	taskctl->now = 0;
-	taskctl->tasks[0] = task;
+	task->priority = 2;//0.02m
+	task->level = 0;
+	task_add(task);//增加进程
+	task_switchsub();//level 设置
 	load_tr(task->sel);
 	
 	//初始化进程时间片
 	task_timer = timer_alloc();
-	timer_settime(task_timer,2);
+	timer_settime(task_timer, task->priority);
 	return task;
 }
 
@@ -63,65 +116,55 @@ struct TASK* task_alloc()
 	return 0;//全部正在使用中
 }
 
-void task_run(struct TASK* task)
+void task_run(struct TASK* task, int level, int priority)
 {
-	task->flags = 2;//活动中的标志
-	taskctl->tasks[taskctl->running++] = task;
+	if(level < 0)
+		level = task->level;
+	if(priority > 0)
+		task->priority = priority;
+	if(task->flags == 2 && task->level != level)//如果改变该进程的level
+		task_remove(task);
+	if(task->flags != 2)
+	{
+		task->level = level;
+		task_add(task);
+	}
+	
+	taskctl->lv_change = 1;//下次切换时检查level
 }
 
 //任务切换进程，寻找一个正在运行的程序。
 void task_switch(void)
 {
-	timer_settime(task_timer,2);
-	if(taskctl->running >= 2)
+	struct TASKLEVEL * tl = &taskctl->level[taskctl->now_lv];
+	struct TASK* new_task, *now_task = tl->tasks[tl->now];
+	tl->now++;
+	if(tl->now == tl->running)
+		tl->now = 0;
+	if(taskctl->lv_change != 0)
 	{
-		taskctl->now++;
-		if(taskctl->now == taskctl->running)
-		{
-			taskctl->now = 0;
-		}
-		
-		farjmp(0, taskctl->tasks[taskctl->now]->sel);
+		task_switchsub();
+		tl = &taskctl->level[taskctl->now_lv];
 	}
+	
+	new_task = tl->tasks[tl->now];
+	timer_settime(task_timer, new_task->priority);
+	if(new_task != now_task)
+		farjmp(0, new_task->sel);
 }
 
 void task_sleep(struct TASK* task)
 {
-	int i;
-	char ts = 0;
+	struct TASK* now_task;
 	if(task->flags == 2)
 	{
-		if(task == taskctl->tasks[taskctl->now])//如果需要休眠的任务是当前的任务
+		now_task = task_now();
+		task_remove(task);
+		if(now_task == task)//如果让自己睡眠，需要进行任务切换
 		{
-			ts = 1;
+			task_switchsub();
+			now_task = task_now();
+			farjmp(0, now_task->sel);
 		}
-		
-		for(i = 0; i < taskctl->running; i++)//我们寻找task对应的位置
-		{
-			if(taskctl->tasks[i] == task)
-				break;
-		}
-	}
-	
-	taskctl->running--;
-	
-	if(i < taskctl->now)
-	{
-		taskctl->now--;
-	}
-	//我们把对应的成员往前移一位。
-	for(; i< taskctl->running; i++)
-	{
-		taskctl->tasks[i] = taskctl->tasks[i+1];
-	}
-	task->flags = 1;//暂停的状态
-	
-	if(ts != 0)//因为把自己暂停了，所以得执行任务切换
-	{
-		if(taskctl->now > taskctl->running || taskctl->now == taskctl->running)
-		{
-			taskctl->now = 0;
-		}
-		farjmp(0, taskctl->tasks[taskctl->now]->sel);
 	}
 }

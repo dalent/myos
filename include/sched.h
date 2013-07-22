@@ -33,22 +33,30 @@ struct tss_struct {
 #ifndef DJGPP
 #define farjmp _farjmp
 #endif
+#define MAX_TASKS_LV 100
+
+#define MAX_TASKLEVELS 10
 extern void farjmp(int eip, int cs);
 //下边定义任务切换控制器
 struct TASK{
 	int sel,flags;//sel表示该进程对应的gdt号
+	int  level,priority;//任务的优先级
 	struct tss_struct tss;
 };
-
+struct TASKLEVEL{
+int running; //正在运行的进程数量
+int now;//当前进程
+struct TASK* tasks[MAX_TASKS_LV];
+};
 struct TASKCTL{
-	int running;//当前正在运行进程的个数
-	int now;//记录当前正在运行的进程
-	struct TASK* tasks[NR_TASKS];
+	int now_lv;//记录当前的进程层
+	int lv_change;//记录下次切换时是否需要改变层数
+	struct TASKLEVEL level[MAX_TASKLEVELS];
 	struct TASK tasks0[NR_TASKS];
 };
 extern  struct TASK* task_init();
 extern struct TASK* task_alloc();
-extern void task_run(struct TASK* task);
+void task_run(struct TASK* task, int level, int priority);
 extern void task_switch(void);
 extern void task_sleep(struct TASK* task);
 #endif

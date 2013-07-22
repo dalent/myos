@@ -26,7 +26,7 @@ int fifo_put(struct FIFO *fifo, int ch)//存放数据
 	{
 		if(fifo->task->flags != 2)
 		{
-			task_run(fifo->task);//唤醒任务。
+			task_run(fifo->task,-1,0);//唤醒任务。
 		}
 	}
 	return 0;

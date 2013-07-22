@@ -231,6 +231,8 @@ void main()
 
 	
 	tss_a =task_init();
+	fifo.task = tss_a;
+	task_run(tss_a, 1, 0);
 	for(i = 0; i< 3; i++)
 	{
 	
@@ -241,10 +243,10 @@ void main()
 		make_window(buf_win_b, 144, 52, s, 0);
 		tss_b[i] = task_alloc();
 		tss_b[i]->tss.eip = &task_b_main;
-		tss_b[i]->tss.esp = (int)malloc(1024) - 8;
+		tss_b[i]->tss.esp = (int)malloc(1024) + 1024 - 8;
 		*((int*)((char*)tss_b[i]->tss.esp + 4)) = (int)sht_win_b[i];
 		tss_change(&tss_b[i]->tss);
-		task_run(tss_b[i]);
+		task_run(tss_b[i],2, i + 1);
 	}
 	
 	sheet_slide(sht_win_b[0], 168,56);
@@ -279,6 +281,7 @@ void main()
 		if(fifo_status(&fifo)  == 0)
 		{	
 		//sti();
+			task_sleep(tss_a);
 			stihlt();
 		}else 
 		{
