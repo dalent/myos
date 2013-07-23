@@ -7,7 +7,7 @@ set char=.\..\char
 set std=.\..\std
 set gdt=.\..\gdt
 set task=.\..\task
-set object=h.o m.o me.o a.o t.o m2.o g.o pic.o ti.o k1.o kb.o  f.o m1.o c.o v.o s.o w.o g1.o s1.o
+set object=h.o m.o me.o a.o t.o m2.o g.o p.o ti.o k1.o kb.o f.o m1.o c.o v.o s.o w.o g1.o s1.o c1.o
 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\m.o main.c 
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o %bin_path%\t.o trap.c 
@@ -31,7 +31,7 @@ copy *.o .\..\%bin_path%\
 del *.o
 
 cd %idt%
-gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o pic.o pic.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o p.o pic.c
 copy *.o .\..\%bin_path%\ 
 del *.o
 
@@ -41,6 +41,7 @@ cd %char%
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o k1.o keyboard.c
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o m1.o mouse.c
 gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o ti.o time.c
+gcc -Wall   -fstrength-reduce -fomit-frame-pointer -finline-functions -nostdinc -fno-builtin  -c -o c1.o console.c
 nasm -f aout -o kb.o kb.asm
 copy *.o .\..\%bin_path%\ 
 del *.o
@@ -71,7 +72,7 @@ copy *.bin .\%bin_path%\
 del /Q *.o
 del /Q *.bin
 cd %bin_path%
-ld -T ..\link.ld -Map map.txt -o kernel %object%
+ld -T ..\link.ld -o kernel %object%
 del /Q *.o
 
 

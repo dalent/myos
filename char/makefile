@@ -1,5 +1,5 @@
 cc = gcc
-objs=keyboard.o kb.o mouse.o time.o
+objs=keyboard.o kb.o mouse.o time.o console.c
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-nostdinc -fno-builtin -c 
 out = mm.a
@@ -12,5 +12,6 @@ all: $(objs)
 	rm *.o
 keyboard.o:keyboard.c
 mouse.o:mouse.c
+console.o:console.c
 kb.o:kb.asm
 	nasm -f aout -o kb.o kb.asm

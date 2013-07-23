@@ -59,4 +59,5 @@ extern struct TASK* task_alloc();
 void task_run(struct TASK* task, int level, int priority);
 extern void task_switch(void);
 extern void task_sleep(struct TASK* task);
+extern struct TASK* task_now();
 #endif

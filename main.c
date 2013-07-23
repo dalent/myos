@@ -27,6 +27,7 @@ extern void mem_init(long start, long end);
 extern void trap_init();
 extern void init_pic();
 void show_time(struct SHTCTL* ctl,struct SHEET*sht);
+
 extern void update_time();
 struct BOOT_INFO boot_info;
 unsigned long memory_end = 0;//机器具有的内存字节数
@@ -81,55 +82,14 @@ struct SHEET* openwindow(struct SHTCTL *ctl)
 	return sht;
 }
 extern int counter ;
-void task_b_main(struct SHEET* sht_back)
-{
-	struct FIFO fifo1;
-	int i, fifobuf[128];
-	struct TIMER *time1;
-	int count = 0;
-	char s[11];
-	fifo_init(&fifo1, fifobuf, 128,0);
-	time1 = timer_alloc();
-	timer_init(time1, &fifo1, 1);
-	timer_settime(time1, 1);
-	for(;;)
-	{
-		count++;
-		sprintf(s,"%d",count);
-		
-		cli();
-		if(fifo_status(&fifo1)  == 0)
-		{	
-		//sti();
-			stihlt();
-		}else 
-		{
-			int data;
-			data = fifo_get(&fifo1);
-			sti();
-			if(data == 1)
-			{
-				write_str2window(sht_back,24, 28, VGA_BLACK,VGA_WHITE,s,10);
-				timer_settime(time1,1);
-			}
-		}
-	}
-}
 
-void tss_change(struct tss_struct* tss)
-{
-	tss->es = 2*8;
-	tss->cs = 1* 8;
-	tss->ss = 2*8;
-	tss->ds = 2 *8;
-	tss->fs = 2*8;
-	tss->gs = 2*8;
-}
+
+extern void init_console(struct  SHEET* sheet);
 void main()
 {
 	int buf[128];
 	char buf1[20];
-	struct TASK* tss_a, *tss_b[3];
+	struct TASK* tss_a, *task_cons;
 	struct FIFO fifo;
 	//int x=0,y=0;
 	static unsigned char kbdus[128] =
@@ -177,10 +137,9 @@ void main()
 	struct SHTCTL *shtctl;
 	unsigned char mousebuf[256], *buf_back;
 	int cursor_x, cursor_y;
-	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win,*sht_win_b[3];
+	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win;
 	struct TIMER* time,*time1,*time2;
 	char s[10];
-	unsigned char * buf_win_b;
 	fifo_init(&fifo, buf, 128,0);
 	//控制内存
 	memory_set();
@@ -233,34 +192,16 @@ void main()
 	tss_a =task_init();
 	fifo.task = tss_a;
 	task_run(tss_a, 1, 0);
-	for(i = 0; i< 3; i++)
-	{
 	
-		sht_win_b[i] = sheet_alloc(shtctl);
-		buf_win_b = (unsigned char*)malloc(144*52);
-		sheet_setbuf(sht_win_b[i], buf_win_b, 144,52,-1);
-		sprintf(s, "task_b%d", i);
-		make_window(buf_win_b, 144, 52, s, 0);
-		tss_b[i] = task_alloc();
-		tss_b[i]->tss.eip = &task_b_main;
-		tss_b[i]->tss.esp = (int)malloc(1024) + 1024 - 8;
-		*((int*)((char*)tss_b[i]->tss.esp + 4)) = (int)sht_win_b[i];
-		tss_change(&tss_b[i]->tss);
-		task_run(tss_b[i],2, i + 1);
-	}
 	
-	sheet_slide(sht_win_b[0], 168,56);
-	sheet_slide(sht_win_b[1], 8,116);
-	sheet_slide(sht_win_b[2], 168,116);
+	init_console(sht_cons);
+	
 	sheet_updown(sht_back,  0);
 	//sheet_updown(sht_win, 3);
 	sheet_updown(sht_cons, 1);
 	
-	sheet_updown(sht_win_b[0], 2);
-	sheet_updown(sht_win_b[1], 3);
-	sheet_updown(sht_win_b[2], 4);
-	sheet_updown(sht_win, 5);
-	sheet_updown(sht_mouse, 6);
+	sheet_updown(sht_win, 2);
+	sheet_updown(sht_mouse, 3);
 	
 	
 	show_time(shtctl,sht_back);

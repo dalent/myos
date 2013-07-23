@@ -3,9 +3,17 @@
 #include "./../include/time.h"
 #include "./../include/stdlib.h"
 #include "./../include/gdt.h"
+#include "./../include/system.h"
 struct TASKCTL *taskctl;
 struct TIMER* task_timer;
-static struct TASK* task_now()
+void task_idle()
+{
+	while(1)
+	{
+		hlt();
+	}
+}
+struct TASK* task_now()
 {
 	struct TASKLEVEL * tl;
 	tl = &taskctl->level[taskctl->now_lv];
@@ -55,7 +63,7 @@ static void task_switchsub()
 struct TASK* task_init()
 {
 	int i;
-	struct TASK*task;
+	struct TASK*task ,*idle;
 	taskctl = (struct TASKCTL*)malloc(sizeof(struct TASKCTL));//我们动态申请taskctl的内存
 	for(i = 0; i < NR_TASKS; i++)
 	{
@@ -76,6 +84,18 @@ struct TASK* task_init()
 	task_add(task);//增加进程
 	task_switchsub();//level 设置
 	load_tr(task->sel);
+	
+	
+	idle = task_alloc();
+	idle->tss.es = 2 * 8;
+	idle->tss.cs=  1 * 8;
+	idle->tss.ds = 2 * 8;
+	idle->tss.fs = 2 * 8;
+	idle->tss.gs = 2 * 8;
+	idle->tss.ss = 2 * 8;
+	idle->tss.esp = (int)malloc(1024) + 1024;
+	idle->tss.eip = (int)&task_idle;
+	task_run(idle, MAX_TASKLEVELS - 1, 1);
 	
 	//初始化进程时间片
 	task_timer = timer_alloc();
