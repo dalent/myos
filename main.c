@@ -73,18 +73,18 @@ struct SHEET* open_console(struct SHTCTL *ctl)
 	return sht_cons;
 }
 
-struct SHEET* openwindow(struct SHTCTL *ctl)
+struct SHEET* openwindow(struct SHTCTL *ctl,const char* text)
 {
 	struct SHEET* sht = sheet_alloc(ctl);
 	unsigned char *buf = (unsigned char * )malloc(160 * 52);
 	sheet_setbuf(sht, buf,160, 52, -1);
-	make_window(buf, 160, 52, "window",-1);
+	make_window(buf, 160, 52, text, 1);
 	return sht;
 }
 extern int counter ;
 
 
-extern void init_console(struct  SHEET* sheet);
+extern struct TASK* init_console(struct  SHEET* sheet);
 void main()
 {
 	int buf[128];
@@ -96,11 +96,50 @@ void main()
 	{
 		0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
 	  '9', '0', '-', '=', 0,	/* Backspace */
-	  '\t',			/* Tab */
+	  0,			/* Tab */
 	  'q', 'w', 'e', 'r',	/* 19 */
 	  't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\n',	/* Enter key */
 		0,			/* 29   - Control */
 	  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	/* 39 */
+	 '\'', '`',   0,		/* Left shift */
+	 '\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
+	  'm', ',', '.', '/',   0,				/* Right shift */
+	  '*',
+		0,	/* Alt */
+	  ' ',	/* Space bar */
+		0,	/* Caps lock */
+		0,	/* 59 - F1 key ... > */
+		0,   0,   0,   0,   0,   0,   0,   0,
+		0,	/* < ... F10 */
+		0,	/* 69 - Num lock*/
+		0,	/* Scroll Lock */
+		0,	/* Home key */
+		0,	/* Up Arrow */
+		0,	/* Page Up */
+	  '-',
+		0,	/* Left Arrow */
+		0,
+		0,	/* Right Arrow */
+	  '+',
+		0,	/* 79 - End key*/
+		0,	/* Down Arrow */
+		0,	/* Page Down */
+		0,	/* Insert Key */
+		0,	/* Delete Key */
+		0,   0,   0,
+		0,	/* F11 Key */
+		0,	/* F12 Key */
+		0,	/* All other keys are undefined */
+	};
+	static unsigned char kbdus1[128] =
+	{
+		0,  27, '!', '@', '#', '$', '%', '^', '&', '*',	/* 9 */
+	  '(', ')', '_', '+', 0,	/* Backspace */
+	  0,			/* Tab */
+	  'q', 'w', 'e', 'r',	/* 19 */
+	  't', 'y', 'u', 'i', 'o', 'p', '{', '}', '\n',	/* Enter key */
+		0,			/* 29   - Control */
+	  'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ':',	/* 39 */
 	 '\'', '`',   0,		/* Left shift */
 	 '\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
 	  'm', ',', '.', '/',   0,				/* Right shift */
@@ -138,8 +177,8 @@ void main()
 	unsigned char mousebuf[256], *buf_back;
 	int cursor_x, cursor_y;
 	struct SHEET* sht_back, *sht_mouse, *sht_cons,*sht_win;
-	struct TIMER* time,*time1,*time2;
-	char s[10];
+	struct TIMER* time,*time1;
+	char key_to = 0, key_shift = 0;
 	fifo_init(&fifo, buf, 128,0);
 	//控制内存
 	memory_set();
@@ -179,8 +218,8 @@ void main()
 	sht_cons = open_console(shtctl);
 	sheet_slide(sht_cons, 56,  6);
 	
-	//timer window
-	sht_win = openwindow(shtctl);
+	//text window
+	sht_win = openwindow(shtctl,"task_a");
 	sheet_slide(sht_win, 80,72);
 	make_textbox(sht_win, 8, 28, 144, 16, VGA_WHITE);
 	cursor_x = 8;
@@ -194,7 +233,7 @@ void main()
 	task_run(tss_a, 1, 0);
 	
 	
-	init_console(sht_cons);
+	task_cons = init_console(sht_cons);
 	
 	sheet_updown(sht_back,  0);
 	//sheet_updown(sht_win, 3);
@@ -227,8 +266,8 @@ void main()
 		}else 
 		{
 			int data;
-			char s[4];
-			s[3] = '\0';
+			char s[2];
+			s[1] = '\0';
 			data = fifo_get(&fifo);
 			sti();
 			if(data == 0)//时间钟表
@@ -267,17 +306,55 @@ void main()
 			else if(data >= 256 && data < 512)
 			{
 				data -= 256;
+				
 				if(data < 0x54 && kbdus[data] != 0)
 				{
-					fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_WHITE, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
-					draw_char(sht_win->buf, sht_win->bxsize, VGA_BLACK, cursor_x, cursor_y, kbdus[data]);
-					sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
-					cursor_x += 8;
-				}if(data == 0x0e && cursor_x > 8)//退格键
+					if(key_shift == 0)
+						s[0] = kbdus[data];
+					else
+						s[0] = kbdus1[data];
+					if(key_to == 0)
+					{
+						write_str2window(sht_win, cursor_x, cursor_y, VGA_BLACK, VGA_WHITE, s, 1);
+						cursor_x += 8;
+					}else//发送命令到当前正在运行的窗口
+					{
+						fifo_put(&task_cons->fifo, s[0] + 256);
+					}
+					
+				}else if(data == 0x0e && cursor_x > 8)//退格键
 				{
 					fill_rectangle(sht_win->buf, sht_win->bxsize, VGA_WHITE, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
 					sheet_refresh(sht_win, cursor_x, cursor_y, cursor_x + 8, cursor_y + 16);
 					cursor_x -= 8;
+				}else if(data == 0x0f)//tab键
+				{
+					
+					if(key_to == 0)
+					{
+						key_to = 1;
+						make_title(sht_cons->buf, sht_cons->bxsize, "console" ,0);
+						make_title(sht_win->buf, sht_win->bxsize, "task_a", 1);
+					}else 
+					{
+						key_to = 0;
+						make_title(sht_cons->buf, sht_cons->bxsize,  "console" ,1);
+						make_title(sht_win->buf, sht_win->bxsize, "task_a", 0);
+					}
+					sheet_refresh(sht_cons, 0, 0, sht_cons->bxsize, 21);
+					sheet_refresh(sht_win, 0, 0 , sht_win->bxsize, 21);
+				}else if(data == 0x2a)//左shift
+				{
+					key_shift |= 1;
+				}else if(data == 0x36)//右shift
+				{
+					key_shift |= 2;
+				}else if(data == 0xaa)//左shift off
+				{
+					key_shift &= ~1;
+				}else if(data == 0xb6)
+				{
+					key_shift &= ~2;
 				}
 			}
 			else 

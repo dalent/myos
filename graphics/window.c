@@ -12,7 +12,8 @@ void write_str2window(struct SHEET*sht, int x, int y, int c, int b, char *s, int
 }
 void make_title(unsigned char * buf, int xsize, char *title, char act)
 {
-	char closebtn[14][16] = {
+	__asm__("cld":::);
+	static char closebtn[14][16] = {
 		"OOOOOOOOOOOOOOO@",
 		"OQQQQQQQQQQQQQ$@",
 		"OQQQQQQQQQQQQQ$@",

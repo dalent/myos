@@ -54,12 +54,6 @@ void do_kb_interupt()
 	//outb(0x61, 0x20);
 	data = inb(KB_DATA);
 
-	if(data & 0x80)
-	{
-	}
-	else
-	{
-		fifo_put(kbFIFO, offset + data);
-	}
+	fifo_put(kbFIFO, offset + data);
 	//draw_char(0xe0000000, 1024, 15, 0,0, data);
 }

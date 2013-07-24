@@ -1,6 +1,7 @@
 #ifndef __SCHED_H__
 #define __SCHED_H__
 #include "tasks.h"
+#include "fifo.h"
 //加载tr，第一次加载表示当前的运行程序。
 #define load_tr(a) \
 __asm__ __volatile__("ltr %%ax"::"a"(a):"1")
@@ -42,6 +43,7 @@ struct TASK{
 	int sel,flags;//sel表示该进程对应的gdt号
 	int  level,priority;//任务的优先级
 	struct tss_struct tss;
+	struct FIFO fifo;
 };
 struct TASKLEVEL{
 int running; //正在运行的进程数量
