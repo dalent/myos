@@ -1,6 +1,6 @@
 
 cc = gcc
-objs=graphics.o sheet.o
+objs=graphics.o sheet.o window.o
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-nostdinc -fno-builtin -c 
 out = graphics.a
@@ -13,3 +13,4 @@ all: $(objs)
 	rm *.o
 graphics.o:graphics.c
 sheet.o:sheet.c
+window.o:window.c

@@ -1,5 +1,5 @@
 cc = gcc
-objs=keyboard.o kb.o mouse.o time.o console.c
+objs=keyboard.o kb.o mouse.o time.o console.o
 CFLAGS = -Wall -fstrength-reduce -fomit-frame-pointer -finline-functions \
 		-nostdinc -fno-builtin -c 
 out = mm.a
